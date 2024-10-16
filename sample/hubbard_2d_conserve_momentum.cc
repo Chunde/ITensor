@@ -4,17 +4,16 @@
 
 using namespace itensor;
 
-int
-main(int argc, char *argv[])
-  {
+int main(int argc, char *argv[])
+{
   int Nx = 6;
-  int Ny = 3;
+  F int Ny = 3;
   double U = 4.0;
-  if(argc > 3)
+  if (argc > 3)
     U = std::stof(argv[3]);
-  if(argc > 2)
+  if (argc > 2)
     Ny = std::stoi(argv[2]);
-  if(argc > 1)
+  if (argc > 1)
     Nx = std::stoi(argv[1]);
 
   double t = 1.0;
@@ -23,7 +22,7 @@ main(int argc, char *argv[])
   args.add("ConserveQNs", true);
   args.add("ConserveK", true);
   int N = Nx * Ny;
-  
+
   auto sweeps = Sweeps(15);
   sweeps.maxdim() = 100, 200, 400, 800, 2000, 3000;
   sweeps.cutoff() = 1e-6;
@@ -36,20 +35,24 @@ main(int argc, char *argv[])
   // Create start state
   auto state = InitState(sites);
   for (auto i : range1(N))
+  {
+    int x = (i - 1) / Ny;
+    int y = (i - 1) % Ny;
+    if (x % 2 == 0)
     {
-    int x = (i-1)/Ny;
-    int y = (i-1)%Ny;
-    if(x%2==0)
-      {
-      if(y%2==0) state.set(i,"Up");
-      else        state.set(i,"Dn");
-      }
-    else
-      {
-      if(y%2==0) state.set(i,"Dn");
-      else        state.set(i,"Up");
-      }
+      if (y % 2 == 0)
+        state.set(i, "Up");
+      else
+        state.set(i, "Dn");
     }
+    else
+    {
+      if (y % 2 == 0)
+        state.set(i, "Dn");
+      else
+        state.set(i, "Up");
+    }
+  }
 
   PrintData(sweeps);
 
@@ -65,4 +68,4 @@ main(int argc, char *argv[])
   PrintData(energy);
 
   return 0;
-  }
+}

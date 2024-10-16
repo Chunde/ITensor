@@ -2,25 +2,24 @@
 #include "src/ising.h"
 #include "itensor/util/print_macro.h"
 
-int
-main()
-  {
+int main()
+{
   Real betac = 0.5 * log(sqrt(2) + 1.0);
   Real beta = 1.1 * betac;
   int maxdim = 20;
   int nsteps = 20;
-  
+
   auto dim0 = 2;
-  
+
   // Define an initial Index making up
   // the Ising partition function
   auto s = Index(dim0, "Site");
-  
+
   // Define the indices of the scale-0
   // Boltzmann weight tensor "A"
   auto sh = addTags(s, "horiz");
   auto sv = addTags(s, "vert");
-  
+
   auto T = ising(sh, sv, beta);
 
   auto l = Index(1, "Link");
@@ -37,7 +36,7 @@ main()
   lh = uniqueIndex(Clu, Al);
 
   auto Au = replaceInds(Al, {lv, prime(lv), sh},
-                            {lh, prime(lh), sv});
+                        {lh, prime(lh), sv});
 
   auto ACl = Al * Clu * dag(prime(Clu));
 
@@ -56,5 +55,4 @@ main()
   printfln("m = %.12f", m);
 
   return 0;
-  }
-
+}
