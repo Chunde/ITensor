@@ -19,13 +19,13 @@
 //
 // all_mps.h - convenience header file that
 //            includes all headers related
-//            to MPS and MPO such as 
+//            to MPS and MPO such as
 //            DMRG, methods for time-evolving
 //            MPS, 2D lattice helpers, etc.
 //
 //          (the headers explicitly included
-//          here are not meant to be an 
-//          exhaustive list, but are 
+//          here are not meant to be an
+//          exhaustive list, but are
 //          a minimal set which pull in
 //          the key features)
 //

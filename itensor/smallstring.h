@@ -29,185 +29,196 @@
 #define CHECK_IND(X)
 #endif
 
-namespace itensor {
+namespace itensor
+{
 
-size_t inline constexpr 
-SmallStringSize() { return 7ul; }
+    size_t inline constexpr SmallStringSize() { return 7ul; }
 
-size_t inline constexpr 
-SmallStringStoreSize() { return 1+SmallStringSize(); }
+    size_t inline constexpr SmallStringStoreSize() { return 1 + SmallStringSize(); }
 
-struct SmallString
+    struct SmallString
     {
-    using storage_type = std::array<char,SmallStringStoreSize()>;
+        using storage_type = std::array<char, SmallStringStoreSize()>;
+
     private:
-    storage_type name_;
+        storage_type name_;
+
     public:
+        SmallString();
 
-    SmallString();
+        SmallString(const char *name);
 
-    SmallString(const char* name);
+        SmallString(std::string const &name) : SmallString(name.c_str()) {}
 
-    SmallString(std::string const& name) : SmallString(name.c_str()) { }
+        size_t static constexpr size() { return SmallStringSize(); }
 
-    size_t static constexpr
-    size() { return SmallStringSize(); }
+        const char *
+        c_str() const
+        {
+            assert(name_[size()] == '\0');
+            return &(name_[0]);
+        }
 
-    const char*
-    c_str() const { assert(name_[size()]=='\0'); return &(name_[0]); }
+        operator const char *() const { return c_str(); }
 
-    operator const char*() const { return c_str(); }
+        const char &
+        operator[](size_t i) const { CHECK_IND(i)
+                                     return name_[i]; }
 
-    const char&
-    operator[](size_t i) const { CHECK_IND(i) return name_[i]; }
+        char &
+        operator[](size_t i) { CHECK_IND(i)
+                               return name_[i]; }
 
-    char&
-    operator[](size_t i) { CHECK_IND(i) return name_[i]; }
+        void
+        set(size_t i, const char c)
+        {
+            CHECK_IND(i)
+            name_[i] = c;
+            return;
+        }
 
-    void
-    set(size_t i, const char c) { CHECK_IND(i) name_[i] = c; return; }
-
-    explicit
-    operator const int64_t() const { return reinterpret_cast<const int64_t&>(name_[0]); }
+        explicit
+        operator const int64_t() const { return reinterpret_cast<const int64_t &>(name_[0]); }
 
     private:
-    void
-    check_ind(size_t j) const
+        void
+        check_ind(size_t j) const
         {
-        if(j >= size()) throw std::runtime_error("SmallString: index out of range");
+            if (j >= size())
+                throw std::runtime_error("SmallString: index out of range");
         }
     };
 
-int inline
-toInt(SmallString const& t)
-  {
-  if(not isdigit(t[0]) || t[0] == '\0') return -1;
-  //TODO: make into a while loop
-  for(size_t j = 1; j < SmallString::size(); ++j)
-    if(not isdigit(t[j]) && t[j] != '\0') return -1;
-  return strtol(t.c_str(),NULL,10);
-  }
-
-bool inline
-operator==(SmallString const& t1, SmallString const& t2)
+    int inline toInt(SmallString const &t)
     {
-    for(size_t j = 0; j < SmallString::size(); ++j)
-        if(t1[j] != t2[j]) return false;
-    return true;
+        if (not isdigit(t[0]) || t[0] == '\0')
+            return -1;
+        // TODO: make into a while loop
+        for (size_t j = 1; j < SmallString::size(); ++j)
+            if (not isdigit(t[j]) && t[j] != '\0')
+                return -1;
+        return strtol(t.c_str(), NULL, 10);
     }
 
-bool inline
-operator!=(SmallString const& t1, SmallString const& t2)
+    bool inline
+    operator==(SmallString const &t1, SmallString const &t2)
     {
-    return !operator==(t1,t2);
+        for (size_t j = 0; j < SmallString::size(); ++j)
+            if (t1[j] != t2[j])
+                return false;
+        return true;
     }
 
-bool inline
-operator<(SmallString const& t1, SmallString const& t2)
+    bool inline
+    operator!=(SmallString const &t1, SmallString const &t2)
     {
-    return int64_t(t1) < int64_t(t2);
+        return !operator==(t1, t2);
     }
 
-bool inline
-operator>(SmallString const& t1, SmallString const& t2)
+    bool inline
+    operator<(SmallString const &t1, SmallString const &t2)
     {
-    return t2 < t1;
+        return int64_t(t1) < int64_t(t2);
     }
 
-bool inline
-operator<=(SmallString const& t1, SmallString const& t2)
+    bool inline
+    operator>(SmallString const &t1, SmallString const &t2)
     {
-    return int64_t(t1) <= int64_t(t2);
+        return t2 < t1;
     }
 
-bool inline
-operator>=(SmallString const& t1, SmallString const& t2)
+    bool inline
+    operator<=(SmallString const &t1, SmallString const &t2)
     {
-    return t2 <= t1;
+        return int64_t(t1) <= int64_t(t2);
     }
 
-bool inline
-operator==(SmallString const& t1, std::string s2)
+    bool inline
+    operator>=(SmallString const &t1, SmallString const &t2)
     {
-    return operator==(t1,SmallString(s2));
-    }
-bool inline
-operator==(std::string s1, SmallString const& t2)
-    {
-    return operator==(SmallString(s1),t2);
-    }
-bool inline
-operator!=(SmallString const& t1, std::string s2)
-    {
-    return operator!=(t1,SmallString(s2));
-    }
-bool inline
-operator!=(std::string s1, SmallString const& t2)
-    {
-    return operator!=(SmallString(s1),t2);
+        return t2 <= t1;
     }
 
-bool inline
-operator==(SmallString const& t1, const char* s2)
+    bool inline
+    operator==(SmallString const &t1, std::string s2)
     {
-    return operator==(t1,SmallString(s2));
+        return operator==(t1, SmallString(s2));
     }
-bool inline
-operator==(const char* s1, SmallString const& t2)
+    bool inline
+    operator==(std::string s1, SmallString const &t2)
     {
-    return operator==(SmallString(s1),t2);
+        return operator==(SmallString(s1), t2);
     }
-bool inline
-operator!=(SmallString const& t1, const char* s2)
+    bool inline
+    operator!=(SmallString const &t1, std::string s2)
     {
-    return operator!=(t1,SmallString(s2));
+        return operator!=(t1, SmallString(s2));
     }
-bool inline
-operator!=(const char* s1, SmallString const& t2)
+    bool inline
+    operator!=(std::string s1, SmallString const &t2)
     {
-    return operator!=(SmallString(s1),t2);
-    }
-
-
-void inline
-write(std::ostream& s, SmallString const& t)
-    {
-    for(size_t n = 0; n < SmallString::size(); ++n)
-        s.write((char*) &t[n],sizeof(char));
+        return operator!=(SmallString(s1), t2);
     }
 
-void inline
-read(std::istream& s, SmallString& t)
+    bool inline
+    operator==(SmallString const &t1, const char *s2)
     {
-    for(size_t n = 0; n < SmallString::size(); ++n)
-        s.read((char*) &(t[n]),sizeof(char));
+        return operator==(t1, SmallString(s2));
+    }
+    bool inline
+    operator==(const char *s1, SmallString const &t2)
+    {
+        return operator==(SmallString(s1), t2);
+    }
+    bool inline
+    operator!=(SmallString const &t1, const char *s2)
+    {
+        return operator!=(t1, SmallString(s2));
+    }
+    bool inline
+    operator!=(const char *s1, SmallString const &t2)
+    {
+        return operator!=(SmallString(s1), t2);
     }
 
-inline SmallString::
-SmallString()
+    void inline write(std::ostream &s, SmallString const &t)
     {
-    name_.fill('\0');
+        for (size_t n = 0; n < SmallString::size(); ++n)
+            s.write((char *)&t[n], sizeof(char));
     }
 
-inline SmallString::
-SmallString(const char* name)
+    void inline read(std::istream &s, SmallString &t)
     {
-    name_.fill('\0');
-    auto len = std::min(std::strlen(name),size());
+        for (size_t n = 0; n < SmallString::size(); ++n)
+            s.read((char *)&(t[n]), sizeof(char));
+    }
+
+    inline SmallString::
+        SmallString()
+    {
+        name_.fill('\0');
+    }
+
+    inline SmallString::
+        SmallString(const char *name)
+    {
+        name_.fill('\0');
+        auto len = std::min(std::strlen(name), size());
 #ifdef DEBUG
-    if(std::strlen(name) > size())
+        if (std::strlen(name) > size())
         {
-        std::cout << "Warning: SmallString name will be truncated to " << size() << " chars" << std::endl;
+            std::cout << "Warning: SmallString name will be truncated to " << size() << " chars" << std::endl;
         }
 #endif
-    for(size_t j = 0; j < len; ++j)
+        for (size_t j = 0; j < len; ++j)
         {
 #ifdef DEBUG
-        if(name[j]==',') throw std::runtime_error("SmallString cannot contain character ','");
+            if (name[j] == ',')
+                throw std::runtime_error("SmallString cannot contain character ','");
 #endif
-        name_[j] = name[j];
+            name_[j] = name[j];
         }
-    assert(name_[size()]=='\0');
+        assert(name_[size()] == '\0');
     }
 
 } // namespace itensor

@@ -30,43 +30,54 @@
 #include "itensor/util/timers.h"
 #include "itensor/detail/algs.h"
 
-namespace itensor {
+namespace itensor
+{
 
-enum Direction { Fromright, Fromleft, BothDir, NoDir };
-
-Direction inline
-toDirection(int i)
+    enum Direction
     {
-    if(static_cast<int>(Fromright) == i) return Fromright;
-    if(static_cast<int>(Fromleft) == i) return Fromleft;
-    if(static_cast<int>(BothDir) == i) return BothDir;
-    return NoDir;
+        Fromright,
+        Fromleft,
+        BothDir,
+        NoDir
+    };
+
+    Direction inline toDirection(int i)
+    {
+        if (static_cast<int>(Fromright) == i)
+            return Fromright;
+        if (static_cast<int>(Fromleft) == i)
+            return Fromleft;
+        if (static_cast<int>(BothDir) == i)
+            return BothDir;
+        return NoDir;
     }
 
-Direction inline
-getDirection(Args const& args,
-             Args::Name const& name)
+    Direction inline getDirection(Args const &args,
+                                  Args::Name const &name)
     {
-    return toDirection(args.getInt(name));
+        return toDirection(args.getInt(name));
     }
 
-Direction inline
-getDirection(Args const& args,
-             Args::Name const& name,
-             Direction default_val)
+    Direction inline getDirection(Args const &args,
+                                  Args::Name const &name,
+                                  Direction default_val)
     {
-    return toDirection(args.getInt(name,default_val));
+        return toDirection(args.getInt(name, default_val));
     }
 
-const Real MIN_CUT = 1E-15;
-const int MAX_DIM = 5000;
-const int MAX_TAGS = 4;
+    const Real MIN_CUT = 1E-15;
+    const int MAX_DIM = 5000;
+    const int MAX_TAGS = 4;
 
-// The PAUSE macro is useful for debugging. 
+// The PAUSE macro is useful for debugging.
 // Prints the current line number and pauses
 // execution until the enter key is pressed.
 #ifndef PAUSE
-#define PAUSE { std::cout << "(Paused, Line " << __LINE__ << ")"; std::cin.get(); }
+#define PAUSE                                             \
+    {                                                     \
+        std::cout << "(Paused, Line " << __LINE__ << ")"; \
+        std::cin.get();                                   \
+    }
 #endif
 
 #ifndef EXIT
@@ -75,7 +86,7 @@ const int MAX_TAGS = 4;
 
 #ifndef DEBUG
 #ifndef NDEBUG
-#define NDEBUG //turn off asserts
+#define NDEBUG // turn off asserts
 #endif
 #endif
 
@@ -86,58 +97,60 @@ const int MAX_TAGS = 4;
 #endif
 
 #ifdef DEBUG
-#define GET(container,j) (container.at(j))
+#define GET(container, j) (container.at(j))
 #else
-#define GET(container,j) (container[j])
-#endif	
+#define GET(container, j) (container[j])
+#endif
 
 #ifdef USESCALE
 #define IF_USESCALE(X) X
 #else
-#define IF_USESCALE(X) 
+#define IF_USESCALE(X)
 #endif
 
-enum Printdat { ShowData, HideData };
-
-
-class Global
+    enum Printdat
     {
-    public:
-    static bool& checkArrows();
-    static bool& debug1();
-    static bool& debug2();
-    static bool& debug3();
-    static bool& debug4();
-    static bool& printdat();
-    static Real& printScale();
-    static bool& showIDs();
-    static Real random(int seed = 0);
-    void static warnDeprecated(const std::string& message);
-    static bool& read32BitIDs();
+        ShowData,
+        HideData
     };
 
-#define PrintData(X) PrintEither(true,#X,X)
-#define PrintDat(X)  PrintEither(true,#X,X)
-
-template<typename T>
-void
-PrintEither(bool pdat,
-            const char* tok,
-            T const& X)
+    class Global
     {
-    auto savep = Global::printdat();
-    Global::printdat() = pdat;
-    PrintNice(tok,X);
-    Global::printdat() = savep;
+    public:
+        static bool &checkArrows();
+        static bool &debug1();
+        static bool &debug2();
+        static bool &debug3();
+        static bool &debug4();
+        static bool &printdat();
+        static Real &printScale();
+        static bool &showIDs();
+        static Real random(int seed = 0);
+        void static warnDeprecated(const std::string &message);
+        static bool &read32BitIDs();
+    };
+
+#define PrintData(X) PrintEither(true, #X, X)
+#define PrintDat(X) PrintEither(true, #X, X)
+
+    template <typename T>
+    void
+    PrintEither(bool pdat,
+                const char *tok,
+                T const &X)
+    {
+        auto savep = Global::printdat();
+        Global::printdat() = pdat;
+        PrintNice(tok, X);
+        Global::printdat() = savep;
     }
 
-void inline
-seedRNG(int seed)
+    void inline seedRNG(int seed)
     {
-    Global::random(seed);
-    detail::seed_quickran(seed);
+        Global::random(seed);
+        detail::seed_quickran(seed);
     }
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

@@ -16,69 +16,69 @@
 #ifndef __ITENSOR_DECOMP_IMPL_H
 #define __ITENSOR_DECOMP_IMPL_H
 
-namespace itensor {
+namespace itensor
+{
 
-namespace detail {
-
-Args inline
-makeIndexSetArgs(std::vector<Index>& inds, Args const& args)
+  namespace detail
   {
-  return args;
+
+    Args inline makeIndexSetArgs(std::vector<Index> &inds, Args const &args)
+    {
+      return args;
+    }
+
+    Args inline makeIndexSetArgs(std::vector<Index> &inds, Index const &i)
+    {
+      inds.push_back(i);
+      return Args::global();
+    }
+
+    template <typename... IndsArgs>
+    Args
+    makeIndexSetArgs(std::vector<Index> &inds,
+                     Index const &i1,
+                     IndsArgs &&...indsargs)
+    {
+      inds.push_back(i1);
+      return makeIndexSetArgs(inds, indsargs...);
+    }
+
+    template <typename... IndsArgs>
+    std::tuple<IndexSet, Args>
+    makeIndexSetArgs(Index const &i1, IndsArgs &&...indsargs)
+    {
+      auto inds = std::vector<Index>();
+      auto args = makeIndexSetArgs(inds, i1, indsargs...);
+      auto is = IndexSet(inds);
+      return std::make_tuple(is, args);
+    }
+
+  } // namespace detail
+
+  template <typename... IndsArgs>
+  std::tuple<ITensor, ITensor, ITensor>
+  svd(ITensor const &T, Index const &i1, IndsArgs &&...indsargs)
+  {
+    auto [is, args] = detail::makeIndexSetArgs(i1, indsargs...);
+    return svd(T, is, args);
   }
 
-Args inline
-makeIndexSetArgs(std::vector<Index>& inds, Index const& i)
+  template <typename... IndsArgs>
+  std::tuple<ITensor, ITensor>
+  qr(ITensor const &T, Index const &i1, IndsArgs &&...indsargs)
   {
-  inds.push_back(i);
-  return Args::global();
+    auto [is, args] = detail::makeIndexSetArgs(i1, indsargs...);
+    return qr(T, is, args);
   }
 
-template <typename... IndsArgs>
-Args
-makeIndexSetArgs(std::vector<Index>& inds,
-                 Index const& i1,
-                 IndsArgs&&... indsargs)
+  template <typename... IndsArgs>
+  std::tuple<ITensor, ITensor>
+  factor(ITensor const &T, Index const &i1, IndsArgs &&...indsargs)
   {
-  inds.push_back(i1);
-  return makeIndexSetArgs(inds, indsargs...);
+    auto [is, args] = detail::makeIndexSetArgs(i1, indsargs...);
+    return factor(T, is, args);
   }
 
-template <typename... IndsArgs>
-std::tuple<IndexSet,Args>
-makeIndexSetArgs(Index const& i1, IndsArgs&&... indsargs)
-  {
-  auto inds = std::vector<Index>();
-  auto args = makeIndexSetArgs(inds,i1,indsargs...);
-  auto is = IndexSet(inds);
-  return std::make_tuple(is,args);
-  }
-
-} //namespace detail
-
-template <typename... IndsArgs>
-std::tuple<ITensor,ITensor,ITensor>
-svd(ITensor const& T, Index const& i1, IndsArgs&&... indsargs)
-  {
-  auto [is,args] = detail::makeIndexSetArgs(i1,indsargs...);
-  return svd(T,is,args);
-  }
-
-template <typename... IndsArgs>
-std::tuple<ITensor,ITensor>
-qr(ITensor const& T, Index const& i1, IndsArgs&&... indsargs)
-  {
-  auto [is,args] = detail::makeIndexSetArgs(i1,indsargs...);
-  return qr(T,is,args);
-  }
-
-template <typename... IndsArgs>
-std::tuple<ITensor,ITensor>
-factor(ITensor const& T, Index const& i1, IndsArgs&&... indsargs)
-  {
-  auto [is,args] = detail::makeIndexSetArgs(i1,indsargs...);
-  return factor(T,is,args);
-  }
-
-} //namespace itensor
+} // namespace itensor
 
 #endif
