@@ -22,14 +22,12 @@ int main(int argc, char *argv[])
     // with respect to quantum numbers
     //
     auto ampo = AutoMPO(sites);
-    for (int j = 1; j < N; ++j)
-    {
+    for (int j = 1; j < N; ++j) {
         ampo += 0.5, "S+", j, "S-", j + 1;
         ampo += 0.5, "S-", j, "S+", j + 1;
         ampo += "Sz", j, "Sz", j + 1;
     }
-    for (int j = 1; j < N - 1; ++j)
-    {
+    for (int j = 1; j < N - 1; ++j) {
         ampo += 0.5 * J2, "S+", j, "S-", j + 2;
         ampo += 0.5 * J2, "S-", j, "S+", j + 2;
         ampo += J2, "Sz", j, "Sz", j + 2;
@@ -40,8 +38,7 @@ int main(int argc, char *argv[])
     // to be a Neel state.
     //
     auto state = InitState(sites);
-    for (int i = 1; i <= N; ++i)
-        state.set(i, (i % 2 == 1 ? "Up" : "Dn"));
+    for (int i = 1; i <= N; ++i) state.set(i, (i % 2 == 1 ? "Up" : "Dn"));
 
     auto psi0 = MPS(state);
 
@@ -78,12 +75,14 @@ int main(int argc, char *argv[])
     //
     // Measure S.S on every bond
     //
-    for (int b = 1; b < N; ++b)
-    {
+    for (int b = 1; b < N; ++b) {
         psi.position(b);
-        auto ketzz = psi(b) * psi(b + 1) * op(sites, "Sz", b) * op(sites, "Sz", b + 1);
-        auto ketpm = psi(b) * psi(b + 1) * op(sites, "Sp", b) * op(sites, "Sm", b + 1) * 0.5;
-        auto ketmp = psi(b) * psi(b + 1) * op(sites, "Sm", b) * op(sites, "Sp", b + 1) * 0.5;
+        auto ketzz =
+            psi(b) * psi(b + 1) * op(sites, "Sz", b) * op(sites, "Sz", b + 1);
+        auto ketpm = psi(b) * psi(b + 1) * op(sites, "Sp", b) *
+                     op(sites, "Sm", b + 1) * 0.5;
+        auto ketmp = psi(b) * psi(b + 1) * op(sites, "Sm", b) *
+                     op(sites, "Sp", b + 1) * 0.5;
         auto bra = dag(psi(b) * psi(b + 1));
         bra.prime("Site");
         auto SdS = elt(bra * ketzz) + elt(bra * ketpm) + elt(bra * ketmp);

@@ -19,72 +19,59 @@
 namespace itensor
 {
 
-    namespace detail
-    {
+namespace detail
+{
 
-        struct ArrowM
-        {
-            Arrow dir = Neither;
-            TagSet tags;
-            long m = 0l;
-            ArrowM(Arrow d,
-                   TagSet t,
-                   long m_) : dir(d), tags(t), m(m_) {}
-        };
+struct ArrowM {
+    Arrow dir = Neither;
+    TagSet tags;
+    long m = 0l;
+    ArrowM(Arrow d, TagSet t, long m_) : dir(d), tags(t), m(m_) {}
+};
 
-        ArrowM inline fill(std::vector<QNInt> const &v,
-                           Arrow dir,
-                           TagSet tags)
-        {
-            return ArrowM(dir, tags, 0l);
-        }
+ArrowM inline fill(std::vector<QNInt> const &v, Arrow dir, TagSet tags)
+{
+    return ArrowM(dir, tags, 0l);
+}
 
-        ArrowM inline fill(std::vector<QNInt> const &v,
-                           Arrow dir)
-        {
-            return ArrowM(dir, TagSet(), 0l);
-        }
+ArrowM inline fill(std::vector<QNInt> const &v, Arrow dir)
+{
+    return ArrowM(dir, TagSet(), 0l);
+}
 
-        ArrowM inline fill(std::vector<QNInt> const &v,
-                           TagSet tags)
-        {
-            return ArrowM(Out, tags, 0l);
-        }
+ArrowM inline fill(std::vector<QNInt> const &v, TagSet tags)
+{
+    return ArrowM(Out, tags, 0l);
+}
 
-        ArrowM inline fill(std::vector<QNInt> const &v)
-        {
-            return ArrowM(Out, TagSet(), 0l);
-        }
+ArrowM inline fill(std::vector<QNInt> const &v)
+{
+    return ArrowM(Out, TagSet(), 0l);
+}
 
-        template <typename... Rest>
-        ArrowM
-        fill(std::vector<QNInt> &v,
-             QN const &q,
-             long size,
-             Rest const &...rest)
-        {
-            v.emplace_back(q, size);
-            auto am = fill(v, rest...);
-            am.m += size;
-            return am;
-        }
+template <typename... Rest>
+ArrowM fill(std::vector<QNInt> &v, QN const &q, long size, Rest const &...rest)
+{
+    v.emplace_back(q, size);
+    auto am = fill(v, rest...);
+    am.m += size;
+    return am;
+}
 
-    } // namespace detail
+}  // namespace detail
 
-    template <typename... QN_Sizes>
-    Index::
-        Index(QN const &q1, long size1,
-              QN_Sizes const &...qnsizes)
-    {
-        constexpr auto size = 1 + sizeof...(qnsizes) / 2;
-        auto qi = stdx::reserve_vector<std::pair<QN, long>>(size);
-        auto am = detail::fill(qi, q1, size1, qnsizes...);
-        auto I = Index(am.m, am.tags);
-        operator=(I);
-        setDir(am.dir);
-        makeStorage(std::move(qi));
-    }
+template <typename... QN_Sizes>
+Index::Index(QN const &q1, long size1, QN_Sizes const &...qnsizes)
+{
+    constexpr auto size = 1 + sizeof...(qnsizes) / 2;
+    auto qi = stdx::reserve_vector<std::pair<QN, long>>(size);
+    auto am = detail::fill(qi, q1, size1, qnsizes...);
+    auto I = Index(am.m, am.tags);
+    operator=(I);
+    setDir(am.dir);
+    makeStorage(std::move(qi));
+}
 
-} // namespace itensor
+}  // namespace itensor
 
 #endif

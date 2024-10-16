@@ -19,8 +19,10 @@
 #include <iostream>
 #include <iterator>
 
-namespace itensor {
-namespace detail {
+namespace itensor
+{
+namespace detail
+{
 
 // template<typename Iterator>
 // struct ValidCheck
@@ -29,17 +31,13 @@ namespace detail {
 //     operator()(const Iterator& it) const { return !it->valid(); }
 //     };
 
-
-template<typename Iterator,
-         class Skip>
+template <typename Iterator, class Skip>
 class SkipIterator
-    {
-    private:
-
+{
+   private:
     typedef std::iterator_traits<Iterator> __traits_type;
 
-    public:
-
+   public:
     typedef typename __traits_type::iterator_category iterator_category;
     typedef typename __traits_type::value_type value_type;
     typedef typename __traits_type::difference_type difference_type;
@@ -48,146 +46,94 @@ class SkipIterator
 
     typedef size_t size_type;
 
-    public:
-
+   public:
     //
     //  constructors
     //
 
-    SkipIterator()
-        { }
+    SkipIterator() {}
 
-    ~SkipIterator()
-        { }
+    ~SkipIterator() {}
 
-    SkipIterator(Iterator start, Iterator end)
-        : 
-        curr_(start), 
-        end_(end)
-        {
+    SkipIterator(Iterator start, Iterator end) : curr_(start), end_(end)
+    {
         initialize_();
-        }
+    }
 
     // convert from another SkipIterator with
     // compatible iterator type
-    template<typename Iter>
-    SkipIterator(const SkipIterator<Iter,Skip>& x)
-        : 
-        curr_(x.curr_), 
-        end_(x.end_)
-        { 
-        }
+    template <typename Iter>
+    SkipIterator(const SkipIterator<Iter, Skip>& x)
+        : curr_(x.curr_), end_(x.end_)
+    {
+    }
 
-    bool
-    valid() const
-        {
-        return curr_ != end_;
-        }
+    bool valid() const { return curr_ != end_; }
 
     //
     // comparison: general iterator requirements
     //
 
-    bool 
-    operator==(const SkipIterator& x) const
-        {
-        return curr_ == x.curr_;
-        }
+    bool operator==(const SkipIterator& x) const { return curr_ == x.curr_; }
 
-    bool 
-    operator!=(const SkipIterator& x) const
-        {
-        return curr_ != x.curr_;
-        }
+    bool operator!=(const SkipIterator& x) const { return curr_ != x.curr_; }
 
     //
     // comparison: random access iterator requirements
     //
 
-    bool 
-    operator<(const SkipIterator& x) const
-        {
-        return curr_ < x.curr_;
-        }
+    bool operator<(const SkipIterator& x) const { return curr_ < x.curr_; }
 
-    bool operator<=(const SkipIterator& x) const
-        {
-        return curr_ <= x.curr_;
-        }
+    bool operator<=(const SkipIterator& x) const { return curr_ <= x.curr_; }
 
-    bool 
-    operator>(const SkipIterator& x) const
-        {
-        return curr_ > x.curr_;
-        }
+    bool operator>(const SkipIterator& x) const { return curr_ > x.curr_; }
 
-    bool 
-    operator>=(const SkipIterator& x) const
-        {
-        return curr_ >= x.curr_;
-        }
+    bool operator>=(const SkipIterator& x) const { return curr_ >= x.curr_; }
 
     //
     //  access: forward iterator requirements
     //
 
-    reference 
-    operator*() const
-        {
-        return *curr_;
-        }
+    reference operator*() const { return *curr_; }
 
-    Iterator 
-    operator->() const
-        {
-        return curr_;
-        }
+    Iterator operator->() const { return curr_; }
 
-    SkipIterator& 
-    operator++()
-        {
+    SkipIterator& operator++()
+    {
         increment_();
         return *this;
-        }
+    }
 
-    SkipIterator  
-    operator++(int)
-        {
+    SkipIterator operator++(int)
+    {
         SkipIterator save(*this);
         increment_();
         return save;
-        }
+    }
 
-    void
-    swap(SkipIterator& x)
-        {
-        std::swap(curr_,x.curr_);
-        std::swap(end_,x.end_);
-        }
+    void swap(SkipIterator& x)
+    {
+        std::swap(curr_, x.curr_);
+        std::swap(end_, x.end_);
+    }
 
-    private:
-
-    void 
-    increment_()
-        {
-        while(valid())
-            {
+   private:
+    void increment_()
+    {
+        while (valid()) {
             ++curr_;
-            if(!valid() || !Skip()(curr_)) return;
-            }
+            if (!valid() || !Skip()(curr_)) return;
         }
+    }
 
-    void 
-    initialize_()
-        {
-        if(valid())
-            {
-            if(Skip()(curr_)) increment_();
-            }
+    void initialize_()
+    {
+        if (valid()) {
+            if (Skip()(curr_)) increment_();
         }
+    }
 
-    private:
-
+   private:
     //
     //  member variables
     //
@@ -200,17 +146,16 @@ class SkipIterator
 
     template <typename _i, typename _c>
     friend class SkipIterator;
+};
 
-    };
-
-template<typename Iterator, class Skip>
-std::ostream&
-operator<<(std::ostream& s, const SkipIterator<Iterator,Skip>& si)
-    {
+template <typename Iterator, class Skip>
+std::ostream& operator<<(std::ostream& s,
+                         const SkipIterator<Iterator, Skip>& si)
+{
     return s << "SkipIterator";
-    }
+}
 
-} //namespace itensor::detail
-} //namespace itensor
+}  // namespace detail
+}  // namespace itensor
 
-#endif 
+#endif

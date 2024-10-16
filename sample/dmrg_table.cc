@@ -13,8 +13,7 @@ using namespace itensor;
 int main(int argc, char *argv[])
 {
     // Parse the input file
-    if (argc < 2)
-    {
+    if (argc < 2) {
         printfln("Usage: %s inputfile_dmrg_table", argv[0]);
         return 0;
     }
@@ -51,8 +50,7 @@ int main(int argc, char *argv[])
     // next-neighbor Heisenberg model
     //
     auto ampo = AutoMPO(sites);
-    for (int j = 1; j < N; ++j)
-    {
+    for (int j = 1; j < N; ++j) {
         ampo += 0.5, "S+", j, "S-", j + 1;
         ampo += 0.5, "S-", j, "S+", j + 1;
         ampo += "Sz", j, "Sz", j + 1;
@@ -60,8 +58,7 @@ int main(int argc, char *argv[])
     auto H = toMPO(ampo);
 
     auto state = InitState(sites);
-    for (int i = 1; i <= N; ++i)
-    {
+    for (int i = 1; i <= N; ++i) {
         if (i % 2 == 1)
             state.set(i, "Up");
         else

@@ -30,8 +30,8 @@
 
 #include "itensor/decomp.h"
 #include "itensor/iterativesolvers.h"
-#include "itensor/util/input.h"
 #include "itensor/util/autovector.h"
+#include "itensor/util/input.h"
 #include "itensor/util/str.h"
 
 #endif

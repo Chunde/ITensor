@@ -13,15 +13,14 @@ int main()
     // block-sparse MPO and MPS tensors
     //
     // auto sites = SpinHalf(N); //make a chain of N spin 1/2's
-    auto sites = SpinOne(N); // make a chain of N spin 1's
+    auto sites = SpinOne(N);  // make a chain of N spin 1's
 
     //
     // Use the AutoMPO feature to create the
     // next-neighbor Heisenberg model
     //
     auto ampo = AutoMPO(sites);
-    for (auto j : range1(N - 1))
-    {
+    for (auto j : range1(N - 1)) {
         ampo += 0.5, "S+", j, "S-", j + 1;
         ampo += 0.5, "S-", j, "S+", j + 1;
         ampo += "Sz", j, "Sz", j + 1;
@@ -32,8 +31,7 @@ int main()
     // to be a Neel state.
     //
     auto state = InitState(sites);
-    for (auto i : range1(N))
-    {
+    for (auto i : range1(N)) {
         if (i % 2 == 1)
             state.set(i, "Up");
         else

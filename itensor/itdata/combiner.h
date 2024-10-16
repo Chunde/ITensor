@@ -21,59 +21,45 @@
 namespace itensor
 {
 
-    class QN;
+class QN;
 
-    class Combiner
-    {
-    public:
-        Combiner() {}
-    };
+class Combiner
+{
+   public:
+    Combiner() {}
+};
 
-    const char *
-    typeNameOf(Combiner const &d);
+const char *typeNameOf(Combiner const &d);
 
-    void inline read(std::istream &s, Combiner &dat) {}
+void inline read(std::istream &s, Combiner &dat) {}
 
-    void inline write(std::ostream &s, Combiner const &dat) {}
+void inline write(std::ostream &s, Combiner const &dat) {}
 
-    Cplx
-    doTask(GetElt const &g, Combiner const &c);
+Cplx doTask(GetElt const &g, Combiner const &c);
 
-    Real
-    doTask(NormNoScale, Combiner const &d);
+Real doTask(NormNoScale, Combiner const &d);
 
-    void
-    doTask(Conj, Combiner const &d);
+void doTask(Conj, Combiner const &d);
 
-    template <typename V>
-    void
-    doTask(Contract &C,
-           Dense<V> const &d,
-           Combiner const &cmb,
-           ManageStore &m);
+template <typename V>
+void doTask(Contract &C, Dense<V> const &d, Combiner const &cmb,
+            ManageStore &m);
 
-    template <typename V>
-    void
-    doTask(Contract &C,
-           Combiner const &cmb,
-           Dense<V> const &d,
-           ManageStore &m);
+template <typename V>
+void doTask(Contract &C, Combiner const &cmb, Dense<V> const &d,
+            ManageStore &m);
 
-    bool
-    doTask(CheckComplex, Combiner const &d);
+bool doTask(CheckComplex, Combiner const &d);
 
-    void
-    doTask(PrintIT &P, Combiner const &d);
+void doTask(PrintIT &P, Combiner const &d);
 
-    auto inline doTask(StorageType const &S, Combiner const &d)
-        -> StorageType::Type
-    {
-        return StorageType::Combiner;
-    }
+auto inline doTask(StorageType const &S, Combiner const &d) -> StorageType::Type
+{
+    return StorageType::Combiner;
+}
 
-    QN
-    doTask(CalcDiv const &C, Combiner const &d);
+QN doTask(CalcDiv const &C, Combiner const &d);
 
-} // namespace itensor
+}  // namespace itensor
 
 #endif

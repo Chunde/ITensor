@@ -17,20 +17,17 @@ int main()
     // next-neighbor Heisenberg model
     //
     auto ampo = AutoMPO(sites);
-    for (int j = 1; j < N; j += 1)
-    {
+    for (int j = 1; j < N; j += 1) {
         ampo += Jho / 2, "S+", j, "S-", j + 1;
         ampo += Jho / 2, "S-", j, "S+", j + 1;
         ampo += Jho, "Sz", j, "Sz", j + 1;
     }
-    for (int j = 1; j < N - 1; j += 2)
-    {
+    for (int j = 1; j < N - 1; j += 2) {
         ampo += Jhh / 2, "S+", j, "S-", j + 2;
         ampo += Jhh / 2, "S-", j, "S+", j + 2;
         ampo += Jhh, "Sz", j, "Sz", j + 2;
     }
-    for (int j = 2; j < N - 1; j += 2)
-    {
+    for (int j = 2; j < N - 1; j += 2) {
         ampo += Joo / 2, "S+", j, "S-", j + 2;
         ampo += Joo / 2, "S-", j, "S+", j + 2;
         ampo += Joo, "Sz", j, "Sz", j + 2;
@@ -41,15 +38,13 @@ int main()
     // to be a Neel state.
     //
     auto state = InitState(sites);
-    for (int i = 1, n = 1; i <= N; i += 2, n += 1)
-    {
+    for (int i = 1, n = 1; i <= N; i += 2, n += 1) {
         if (n % 2 == 1)
             state.set(i, "Up");
         else
             state.set(i, "Dn");
     }
-    for (int i = 2, n = 1; i <= N; i += 2, n += 1)
-    {
+    for (int i = 2, n = 1; i <= N; i += 2, n += 1) {
         if (n % 2 == 1)
             state.set(i, "Up");
         else

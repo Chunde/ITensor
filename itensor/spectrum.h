@@ -16,81 +16,66 @@
 #ifndef __ITENSOR_SPECTRUM_H
 #define __ITENSOR_SPECTRUM_H
 
-#include "itensor/tensor/vec.h"
 #include "itensor/qn.h"
+#include "itensor/tensor/vec.h"
 
 namespace itensor
 {
 
-    //
-    // Spectrum
-    //
-    // Stores density matrix eigenvalue spectrum following a call to
-    // svd, denmatDecomp, etc.
-    //
+//
+// Spectrum
+//
+// Stores density matrix eigenvalue spectrum following a call to
+// svd, denmatDecomp, etc.
+//
 
-    class Spectrum
-    {
-    public:
-        using QNStorage = std::vector<QN>;
+class Spectrum
+{
+   public:
+    using QNStorage = std::vector<QN>;
 
-    private:
-        Vector eigs_;
-        Real truncerr_;
-        QNStorage qns_;
+   private:
+    Vector eigs_;
+    Real truncerr_;
+    QNStorage qns_;
 
-    public:
-        Spectrum(Args const &args = Args::global());
+   public:
+    Spectrum(Args const &args = Args::global());
 
-        Spectrum(Vector &&eigs, Args const &args = Args::global());
+    Spectrum(Vector &&eigs, Args const &args = Args::global());
 
-        Spectrum(Vector &&eigs,
-                 QNStorage &&qns,
-                 Args const &args = Args::global());
+    Spectrum(Vector &&eigs, QNStorage &&qns, Args const &args = Args::global());
 
-        Real
-        truncerr() const { return truncerr_; }
+    Real truncerr() const { return truncerr_; }
 
-        Vector const &
-        eigs() const { return eigs_; }
+    Vector const &eigs() const { return eigs_; }
 
-        Vector const &
-        eigsKept() const { return eigs(); }
+    Vector const &eigsKept() const { return eigs(); }
 
-        // 1-indexed
-        Real
-        eig(int n) const { return eigs_(n - 1); }
+    // 1-indexed
+    Real eig(int n) const { return eigs_(n - 1); }
 
-        int
-        numEigsKept() const { return eigs_.size(); }
+    int numEigsKept() const { return eigs_.size(); }
 
-        bool
-        hasQNs() const { return !qns_.empty(); }
+    bool hasQNs() const { return !qns_.empty(); }
 
-        // 1-indexed
-        QN
-        qn(int n) const;
+    // 1-indexed
+    QN qn(int n) const;
 
-        QNStorage const &
-        qns() const { return qns_; }
+    QNStorage const &qns() const { return qns_; }
 
-        int
-        size() const { return eigs_.size(); }
+    int size() const { return eigs_.size(); }
 
-        void
-        read(std::istream &s);
-        void
-        write(std::ostream &s) const;
+    void read(std::istream &s);
+    void write(std::ostream &s) const;
 
-    private:
-        void
-        computeTruncerr(Args const &args);
+   private:
+    void computeTruncerr(Args const &args);
 
-    }; // class Spectrum
+};  // class Spectrum
 
-    std::ostream &
-    operator<<(std::ostream &s, Spectrum const &spec);
+std::ostream &operator<<(std::ostream &s, Spectrum const &spec);
 
-} // namespace itensor
+}  // namespace itensor
 
 #endif

@@ -24,34 +24,20 @@ class Synchronized
     T data_;
     mutable std::mutex m_;
 
-public:
+   public:
     using value_type = T;
 
     Synchronized() {}
     Synchronized(const value_type &data) : data_(data) {}
     Synchronized(value_type &&data) : data_(std::move(data)) {}
 
-    Synchronized(const Synchronized &o)
-    {
-        set(o.data_);
-    }
+    Synchronized(const Synchronized &o) { set(o.data_); }
 
-    Synchronized(Synchronized &&o)
-    {
-        set(std::move(o.data_));
-    }
+    Synchronized(Synchronized &&o) { set(std::move(o.data_)); }
 
-    Synchronized &
-    operator=(const Synchronized &o)
-    {
-        set(o.data_);
-    }
+    Synchronized &operator=(const Synchronized &o) { set(o.data_); }
 
-    Synchronized &
-    operator=(Synchronized &&o)
-    {
-        set(std::move(o.data_));
-    }
+    Synchronized &operator=(Synchronized &&o) { set(std::move(o.data_)); }
 
     explicit operator bool() const
     {
@@ -59,22 +45,19 @@ public:
         return static_cast<bool>(data_);
     }
 
-    value_type
-    get() const
+    value_type get() const
     {
         std::lock_guard<std::mutex> g(m_);
         return data_;
     }
 
-    void
-    set(const value_type &val)
+    void set(const value_type &val)
     {
         std::lock_guard<std::mutex> g(m_);
         data_ = val;
     }
 
-    void
-    set(value_type &&val)
+    void set(value_type &&val)
     {
         std::lock_guard<std::mutex> g(m_);
         data_ = std::move(val);

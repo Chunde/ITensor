@@ -6,15 +6,15 @@ using namespace itensor;
 int main(int argc, char *argv[])
 {
     // Parse the input file
-    if (argc != 2)
-    {
+    if (argc != 2) {
         printfln("Usage: %s inputfile_exthubbard", argv[0]);
         return 0;
     }
     auto input = InputGroup(argv[1], "input");
 
     auto N = input.getInt("N");
-    auto Npart = input.getInt("Npart", N); // number of particles, default is N (half filling)
+    auto Npart = input.getInt(
+        "Npart", N);  // number of particles, default is N (half filling)
 
     auto nsweeps = input.getInt("nsweeps");
     auto t1 = input.getReal("t1", 1);
@@ -36,20 +36,17 @@ int main(int argc, char *argv[])
     // Create the Hamiltonian using AutoMPO
     //
     auto ampo = AutoMPO(sites);
-    for (int i = 1; i <= N; ++i)
-    {
+    for (int i = 1; i <= N; ++i) {
         ampo += U, "Nupdn", i;
     }
-    for (int b = 1; b < N; ++b)
-    {
+    for (int b = 1; b < N; ++b) {
         ampo += -t1, "Cdagup", b, "Cup", b + 1;
         ampo += -t1, "Cdagup", b + 1, "Cup", b;
         ampo += -t1, "Cdagdn", b, "Cdn", b + 1;
         ampo += -t1, "Cdagdn", b + 1, "Cdn", b;
         ampo += V1, "Ntot", b, "Ntot", b + 1;
     }
-    for (int b = 1; b < N - 1; ++b)
-    {
+    for (int b = 1; b < N - 1; ++b) {
         ampo += -t2, "Cdagup", b, "Cup", b + 2;
         ampo += -t2, "Cdagup", b + 2, "Cup", b;
         ampo += -t2, "Cdagdn", b, "Cdn", b + 2;
@@ -63,22 +60,16 @@ int main(int argc, char *argv[])
     //
     auto state = InitState(sites);
     int p = Npart;
-    for (int i = N; i >= 1; --i)
-    {
-        if (p > i)
-        {
+    for (int i = N; i >= 1; --i) {
+        if (p > i) {
             println("Doubly occupying site ", i);
             state.set(i, "UpDn");
             p -= 2;
-        }
-        else if (p > 0)
-        {
+        } else if (p > 0) {
             println("Singly occupying site ", i);
             state.set(i, (i % 2 == 1 ? "Up" : "Dn"));
             p -= 1;
-        }
-        else
-        {
+        } else {
             state.set(i, "Emp");
         }
     }
@@ -96,26 +87,24 @@ int main(int argc, char *argv[])
     // Measure spin densities
     //
     Vector upd(N), dnd(N);
-    for (int j = 1; j <= N; ++j)
-    {
+    for (int j = 1; j <= N; ++j) {
         psi.position(j);
-        upd(j - 1) = elt(dag(prime(psi(j), "Site")) * op(sites, "Nup", j) * psi(j));
-        dnd(j - 1) = elt(dag(prime(psi(j), "Site")) * op(sites, "Ndn", j) * psi(j));
+        upd(j - 1) =
+            elt(dag(prime(psi(j), "Site")) * op(sites, "Nup", j) * psi(j));
+        dnd(j - 1) =
+            elt(dag(prime(psi(j), "Site")) * op(sites, "Ndn", j) * psi(j));
     }
 
     println("Up Density:");
-    for (int j = 0; j < N; ++j)
-        printfln("%d %.10f", 1 + j, upd(j));
+    for (int j = 0; j < N; ++j) printfln("%d %.10f", 1 + j, upd(j));
     println();
 
     println("Dn Density:");
-    for (int j = 0; j < N; ++j)
-        printfln("%d %.10f", 1 + j, dnd(j));
+    for (int j = 0; j < N; ++j) printfln("%d %.10f", 1 + j, dnd(j));
     println();
 
     println("Total Density:");
-    for (int j = 0; j < N; ++j)
-        printfln("%d %.10f", 1 + j, (upd(j) + dnd(j)));
+    for (int j = 0; j < N; ++j) printfln("%d %.10f", 1 + j, (upd(j) + dnd(j)));
     println();
 
     //

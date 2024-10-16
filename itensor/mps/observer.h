@@ -21,18 +21,18 @@
 namespace itensor
 {
 
-    class Observer
-    {
-    public:
-        Observer() {}
+class Observer
+{
+   public:
+    Observer() {}
 
-        void virtual measure(Args const &args = Args::global()) {}
+    void virtual measure(Args const &args = Args::global()) {}
 
-        bool virtual checkDone(Args const &args = Args::global()) { return false; }
+    bool virtual checkDone(Args const &args = Args::global()) { return false; }
 
-        virtual ~Observer() {}
-    };
+    virtual ~Observer() {}
+};
 
-} // namespace itensor
+}  // namespace itensor
 
 #endif
