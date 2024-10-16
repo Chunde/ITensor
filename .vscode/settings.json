@@ -1,0 +1,56 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "remote.SSH.remotePlatform": {
+        "192.168.1.77": "linux",
+        "kamiak": "linux",
+        "47.89.192.226": "linux",
+        "47.96.65.26": "linux",
+        "AliCloud": "linux",
+        "RaspBerryPi": "linux"
+    },
+    "terminal.integrated.autoReplies": {
+        "chunde.huang@kamiak.wsu.edu": "Hcd_362015@kla2\n",
+        "root@47.96.65.26": "Qq_20232023\r"
+    },
+    "workbench.editorAssociations": {
+        "*.cs": "default"
+    },
+    "code-runner.runInTerminal": true,
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "Default Dark Modern",
+    "cmake.showOptionsMovedNotification": false,
+    "python.analysis.extraPaths": [
+        "c:\\Users\\Chunde\\.vscode\\extensions\\continue.continue-0.6.15-win32-x64"
+    ],
+    "python.autoComplete.extraPaths": [
+        "c:\\Users\\Chunde\\.vscode\\extensions\\continue.continue-0.6.15-win32-x64"
+    ],
+    "extensions.ignoreRecommendations": true,
+    "workbench.colorCustomizations": {},
+    "python.defaultInterpreterPath": "C:\\Program Files\\Python\\3.9.0\\python.exe",
+    "cSpell.userWords": [
+        "dtype",
+        "referer"
+    ],
+    "inference.custom.model": "llama2:latest",
+    "python.createEnvironment.trigger": "off",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
+    "editor.formatOnSave": true,
+    // "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, BreakBeforeBraces: Linux, AllowShortFunctionsOnASingleLine: true, AllowShortIfStatementsOnASingleLine: true, AllowShortLoopsOnASingleLine: true }",
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 4, BreakBeforeBraces: Linux, AllowShortFunctionsOnASingleLine: true, AllowShortIfStatementsOnASingleLine: true, AllowShortLoopsOnASingleLine: true }",
+    "[cpp]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+    },
+}
