@@ -3,33 +3,34 @@
 
 #include "itensor/util/print.h"
 
-namespace itensor {
+namespace itensor
+{
 
-//
-// Usage:
-//
-//    static auto sc = StaticCount("Incremented %d times");
-//    ++sc;
-//    //will automatically print "Incremented ## times"
-//    //when program ends
-//
+    //
+    // Usage:
+    //
+    //    static auto sc = StaticCount("Incremented %d times");
+    //    ++sc;
+    //    //will automatically print "Incremented ## times"
+    //    //when program ends
+    //
 
-struct StaticCount
+    struct StaticCount
     {
-    long count = 0;
-    const char* fstring = "";
+        long count = 0;
+        const char *fstring = "";
 
-    StaticCount(const char* fstring_) : fstring(fstring_) { }
+        StaticCount(const char *fstring_) : fstring(fstring_) {}
 
-    ~StaticCount()
+        ~StaticCount()
         {
-        printfln(fstring,count);
+            printfln(fstring, count);
         }
 
-    void
-    operator++() { ++count; }
+        void
+        operator++() { ++count; }
     };
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

@@ -19,102 +19,102 @@
 #include "itensor/itdata/task_types.h"
 #include "itensor/itdata/itdata.h"
 
-namespace itensor {
+namespace itensor
+{
 
-class ITLazy
+    class ITLazy
     {
     public:
-    struct IndSto
+        struct IndSto
         {
-        IndexSet i;
-        PData s;
-        IndSto() { }
-        IndSto(const IndexSet& i_,
-               const PData& s_)
-            : i(i_), s(s_) { }
+            IndexSet i;
+            PData s;
+            IndSto() {}
+            IndSto(const IndexSet &i_,
+                   const PData &s_)
+                : i(i_), s(s_) {}
         };
-    using storage_type = std::vector<IndSto>;
+        using storage_type = std::vector<IndSto>;
+
     private:
-    storage_type todo_;
-    PData result_;
+        storage_type todo_;
+        PData result_;
+
     public:
+        ITLazy() {}
 
-    ITLazy() { }
-
-    ITLazy(const IndexSet& i1,
-           const PData& s1,
-           const IndexSet& i2,
-           const PData& s2)
-      : todo_(2) 
-        { 
-        todo_[0].i = i1;
-        todo_[0].s = s1;
-        todo_[1].i = i2;
-        todo_[1].s = s2;
-        }
-
-    storage_type&
-    todo() { return todo_; }
-
-    const storage_type&
-    todo() const { return todo_; }
-
-    const IndexSet&
-    iset(size_t n) const { return todo_[n].i; }
-
-    PData&
-    store(size_t n) { return todo_[n].s; }
-
-    const PData&
-    store(size_t n) const { return todo_[n].s; }
-
-    void
-    addStore(const IndexSet& is,
-             const PData& pstore)
+        ITLazy(const IndexSet &i1,
+               const PData &s1,
+               const IndexSet &i2,
+               const PData &s2)
+            : todo_(2)
         {
-        todo_.emplace_back(is,pstore);
+            todo_[0].i = i1;
+            todo_[0].s = s1;
+            todo_[1].i = i2;
+            todo_[1].s = s2;
         }
 
-    void
-    addStore(const ITLazy& other)
+        storage_type &
+        todo() { return todo_; }
+
+        const storage_type &
+        todo() const { return todo_; }
+
+        const IndexSet &
+        iset(size_t n) const { return todo_[n].i; }
+
+        PData &
+        store(size_t n) { return todo_[n].s; }
+
+        const PData &
+        store(size_t n) const { return todo_[n].s; }
+
+        void
+        addStore(const IndexSet &is,
+                 const PData &pstore)
         {
-        todo_.insert(todo_.end(),other.todo_.begin(),other.todo_.end());
+            todo_.emplace_back(is, pstore);
         }
 
-    bool
-    hasResult() const { return static_cast<bool>(result_); }
+        void
+        addStore(const ITLazy &other)
+        {
+            todo_.insert(todo_.end(), other.todo_.begin(), other.todo_.end());
+        }
 
-    const PData&
-    result() const { return result_; }
+        bool
+        hasResult() const { return static_cast<bool>(result_); }
 
-    void
-    setResult(PData&& p) { result_ = std::move(p); }
+        const PData &
+        result() const { return result_; }
 
+        void
+        setResult(PData &&p) { result_ = std::move(p); }
     };
 
-bool
-hasResult(const ITLazy& Z);
+    bool
+    hasResult(const ITLazy &Z);
 
-PData
-evaluate(ITLazy& Z);
+    PData
+    evaluate(ITLazy &Z);
 
-void
-doTask(Contract<Index>& C,
-       ITLazy& L,
-       const ITLazy& R);
+    void
+    doTask(Contract<Index> &C,
+           ITLazy &L,
+           const ITLazy &R);
 
-void
-doTask(Contract<Index>& C,
-       ITLazy& L,
-       const PData& R);
+    void
+    doTask(Contract<Index> &C,
+           ITLazy &L,
+           const PData &R);
 
-void
-doTask(Contract<Index>& C,
-       const PData& R,
-       const ITLazy& L,
-       ManageStore& m);
+    void
+    doTask(Contract<Index> &C,
+           const PData &R,
+           const ITLazy &L,
+           ManageStore &m);
 
-} //namespace itensor
+} // namespace itensor
 
 #endif
-

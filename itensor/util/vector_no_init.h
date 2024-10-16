@@ -18,57 +18,57 @@
 
 #include <vector>
 
-namespace itensor {
+namespace itensor
+{
 
-template <class T>
-class uninitialized_allocator
+  template <class T>
+  class uninitialized_allocator
   {
   public:
-  typedef T value_type;
+    typedef T value_type;
 
-  uninitialized_allocator() noexcept { }
+    uninitialized_allocator() noexcept {}
 
-  template <class U>
-  uninitialized_allocator(uninitialized_allocator<U> const&) noexcept { }
+    template <class U>
+    uninitialized_allocator(uninitialized_allocator<U> const &) noexcept {}
 
-  T*
-  allocate(std::size_t n)
+    T *
+    allocate(std::size_t n)
     {
-    return static_cast<T*>(::operator new(n * sizeof(T)));
+      return static_cast<T *>(::operator new(n * sizeof(T)));
     }
 
-  void
-  deallocate(T* p, std::size_t) noexcept
+    void
+    deallocate(T *p, std::size_t) noexcept
     {
-    ::operator delete(static_cast<void*>(p));
+      ::operator delete(static_cast<void *>(p));
     }
 
-  template <class U>
-  void construct(U*) noexcept
+    template <class U>
+    void construct(U *) noexcept
     {
-    //TODO: do we want this trait check? It fails for std::complex<double>
-    //static_assert(std::is_trivially_default_constructible<U>::value,
-    //"This allocator can only be used with trivally default constructible types");
+      // TODO: do we want this trait check? It fails for std::complex<double>
+      // static_assert(std::is_trivially_default_constructible<U>::value,
+      //"This allocator can only be used with trivally default constructible types");
     }
 
-  template <class U, class A0, class... Args>
-  void
-  construct(U* up, A0&& a0, Args&&... args) noexcept
+    template <class U, class A0, class... Args>
+    void
+    construct(U *up, A0 &&a0, Args &&...args) noexcept
     {
-    ::new(up) U(std::forward<A0>(a0), std::forward<Args>(args)...);
+      ::new (up) U(std::forward<A0>(a0), std::forward<Args>(args)...);
     }
 
-  bool
-  operator==(uninitialized_allocator<T> const&) { return true; }
+    bool
+    operator==(uninitialized_allocator<T> const &) { return true; }
 
-  bool
-  operator!=(uninitialized_allocator<T> const&) { return false; }
-
+    bool
+    operator!=(uninitialized_allocator<T> const &) { return false; }
   };
 
-template<typename T>
-using vector_no_init = std::vector<T,uninitialized_allocator<T>>;
+  template <typename T>
+  using vector_no_init = std::vector<T, uninitialized_allocator<T>>;
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

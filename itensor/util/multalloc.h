@@ -50,131 +50,138 @@
 #define CHECK_ALLOCATED
 #endif
 
-namespace itensor {
+namespace itensor
+{
 
-//
-// //Sample usage:
-// MultAlloc<Real,3> ma;
-// ma.add(size0);
-// ma.add(size1);
-// ma.allocate(); //do single allocation for both memory ranges
-// //ma.add(size2); //error: can't request more memory, idea is to only allocate once
-// auto* p0 = ma[0];
-// auto* p1 = ma[1];
-//
+    //
+    // //Sample usage:
+    // MultAlloc<Real,3> ma;
+    // ma.add(size0);
+    // ma.add(size1);
+    // ma.allocate(); //do single allocation for both memory ranges
+    // //ma.add(size2); //error: can't request more memory, idea is to only allocate once
+    // auto* p0 = ma[0];
+    // auto* p1 = ma[1];
+    //
 
-template<typename T, size_t MaxNAlloc>
-class MultAlloc
+    template <typename T, size_t MaxNAlloc>
+    class MultAlloc
     {
     public:
-    using size_type = std::size_t;
-    using pointer = T*;
+        using size_type = std::size_t;
+        using pointer = T *;
+
     private:
-    struct SizeOff
+        struct SizeOff
         {
-        size_type size = 0;
-        size_type offset = 0;
-        SizeOff() { }
-        SizeOff(size_type s, size_type o) : size(s), offset(o) { }
+            size_type size = 0;
+            size_type offset = 0;
+            SizeOff() {}
+            SizeOff(size_type s, size_type o) : size(s), offset(o) {}
         };
-    size_type arrsize_ = 0;
-    std::array<SizeOff,MaxNAlloc> sos_;
-    std::vector<T> v_;
-    //T* p_ = nullptr;
+        size_type arrsize_ = 0;
+        std::array<SizeOff, MaxNAlloc> sos_;
+        std::vector<T> v_;
+        // T* p_ = nullptr;
     public:
+        MultAlloc() {}
 
-    MultAlloc() { }
+        //~MultAlloc()
+        //    {
+        //    if(p_)
+        //        {
+        //        if(Global::debug1()) println("<<<< Deallocating MultAlloc, p_=",p_);
+        //        CHECK_NOT_EMPTY
+        //        auto totsize = sos_[arrsize_-1].offset+sos_[arrsize_-1].size;
+        //        a_.deallocate(p_,totsize);
+        //        }
+        //    }
 
-    //~MultAlloc()
-    //    {
-    //    if(p_)
-    //        {
-    //        if(Global::debug1()) println("<<<< Deallocating MultAlloc, p_=",p_);
-    //        CHECK_NOT_EMPTY
-    //        auto totsize = sos_[arrsize_-1].offset+sos_[arrsize_-1].size;
-    //        a_.deallocate(p_,totsize);
-    //        }
-    //    }
+        size_type
+        size() const { return arrsize_; }
 
-    size_type
-    size() const { return arrsize_; }
+        size_type
+        data_size() const { return v_.size(); }
 
-    size_type
-    data_size() const { return v_.size(); }
-
-    size_type
-    size(size_type i) const
+        size_type
+        size(size_type i) const
         {
-        CHECK_IND(i) 
-        return sos_[i].size;
+            CHECK_IND(i)
+            return sos_[i].size;
         }
 
-    size_type constexpr
-    max_nalloc() const { return MaxNAlloc; }
+        size_type constexpr max_nalloc() const { return MaxNAlloc; }
 
-    void
-    add(size_type size)
+        void
+        add(size_type size)
         {
-        CHECK_NOT_FULL
-        //if(p_) throw std::runtime_error("Can't add to MultAlloc after allocated");
-        if(!v_.empty()) throw std::runtime_error("Can't add to MultAlloc after allocated");
-        if(arrsize_==0)
+            CHECK_NOT_FULL
+            // if(p_) throw std::runtime_error("Can't add to MultAlloc after allocated");
+            if (!v_.empty())
+                throw std::runtime_error("Can't add to MultAlloc after allocated");
+            if (arrsize_ == 0)
             {
-            sos_[arrsize_] = SizeOff(size,0);
+                sos_[arrsize_] = SizeOff(size, 0);
             }
-        else
+            else
             {
-            auto& prev = sos_[arrsize_-1];
-            sos_[arrsize_] = SizeOff(size,prev.offset+prev.size);
+                auto &prev = sos_[arrsize_ - 1];
+                sos_[arrsize_] = SizeOff(size, prev.offset + prev.size);
             }
-        ++arrsize_;
+            ++arrsize_;
         }
 
-    void
-    allocate()
+        void
+        allocate()
         {
-        CHECK_NOT_EMPTY
-        auto totsize = sos_[arrsize_-1].offset+sos_[arrsize_-1].size;
-        v_.resize(totsize);
+            CHECK_NOT_EMPTY
+            auto totsize = sos_[arrsize_ - 1].offset + sos_[arrsize_ - 1].size;
+            v_.resize(totsize);
         }
 
-    pointer
-    operator[](size_type i)
-        { 
-        CHECK_IND(i) 
-        CHECK_ALLOCATED
-        CHECK_SIZE(i)
+        pointer
+        operator[](size_type i)
+        {
+            CHECK_IND(i)
+            CHECK_ALLOCATED
+            CHECK_SIZE(i)
 #ifdef DEBUG
-        if(sos_[i].offset+sos_[i].size > v_.size()) throw std::out_of_range("data out of range in MultAlloc");
+            if (sos_[i].offset + sos_[i].size > v_.size())
+                throw std::out_of_range("data out of range in MultAlloc");
 #endif
-        return v_.data()+sos_[i].offset; 
+            return v_.data() + sos_[i].offset;
         }
 
     private:
-    void
-    check_ind(size_type i) const
+        void
+        check_ind(size_type i) const
         {
-        if(i >= arrsize_) throw std::out_of_range("index out of range in MultAlloc");
+            if (i >= arrsize_)
+                throw std::out_of_range("index out of range in MultAlloc");
         }
-    void
-    check_size(size_type i) const
+        void
+        check_size(size_type i) const
         {
-        if(sos_[i].size==0) throw std::out_of_range("attempted to access size zero element of MultAlloc");
+            if (sos_[i].size == 0)
+                throw std::out_of_range("attempted to access size zero element of MultAlloc");
         }
-    void
-    check_not_empty() const
+        void
+        check_not_empty() const
         {
-        if(arrsize_==0) throw std::out_of_range("MultAlloc is empty");
+            if (arrsize_ == 0)
+                throw std::out_of_range("MultAlloc is empty");
         }
-    void
-    check_not_full() const
+        void
+        check_not_full() const
         {
-        if(arrsize_ >= max_nalloc()) throw std::out_of_range("exceeded max number in MultAlloc");
+            if (arrsize_ >= max_nalloc())
+                throw std::out_of_range("exceeded max number in MultAlloc");
         }
-    void
-    check_allocated() const
+        void
+        check_allocated() const
         {
-        if(v_.empty()) throw std::runtime_error("MultAlloc has not been allocated");
+            if (v_.empty())
+                throw std::runtime_error("MultAlloc has not been allocated");
         }
     };
 
@@ -184,6 +191,6 @@ class MultAlloc
 #undef CHECK_NOT_EMPTY
 #undef CHECK_ALLOCATED
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

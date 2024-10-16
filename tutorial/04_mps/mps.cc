@@ -9,10 +9,10 @@ using namespace itensor;
 using std::vector;
 
 int main()
-    {
+{
     int N = 50;
 
-    auto sites = SpinHalf(N,{"ConserveQNs=",false});
+    auto sites = SpinHalf(N, {"ConserveQNs=", false});
 
     //
     // TODO
@@ -25,14 +25,14 @@ int main()
     // Create the MPO for the transverse field
     // Ising model
     auto ampo = AutoMPO(sites);
-    for(int j = 1; j < N; ++j)
-        {
-        ampo += -4.0,"Sz",j,"Sz",j+1;
-        }
-    for(int j = 1; j <= N; ++j)
-        {
-        ampo += -2*h,"Sx",j;
-        }
+    for (int j = 1; j < N; ++j)
+    {
+        ampo += -4.0, "Sz", j, "Sz", j + 1;
+    }
+    for (int j = 1; j <= N; ++j)
+    {
+        ampo += -2 * h, "Sx", j;
+    }
     auto H = toMPO(ampo);
 
     // Create a random starting state
@@ -41,10 +41,10 @@ int main()
 
     // Run DMRG to get the ground state
     auto sweeps = Sweeps(5);
-    sweeps.maxdim() = 5,10,20;
+    sweeps.maxdim() = 5, 10, 20;
     sweeps.cutoff() = 1E-10;
-    auto [E,psi] = dmrg(H,psi0,sweeps,{"Quiet",true});
-    println("Ground state energy = ",E);
+    auto [E, psi] = dmrg(H, psi0, sweeps, {"Quiet", true});
+    println("Ground state energy = ", E);
 
     // Make psidag, the conjugate of psi
     auto psidag = dag(prime(psi));
@@ -52,16 +52,16 @@ int main()
     // A vector holding the operators used
     // in the expectation value.
     // All set to identity operators to start.
-    // Note: this is one-indexed 
+    // Note: this is one-indexed
     //       (O[n] is the operator on site n)
-    auto O = vector<ITensor>(N+1);
-    for(auto j : range1(N))
-        {
-        O[j] = op(sites,"Id",j);
-        }
+    auto O = vector<ITensor>(N + 1);
+    for (auto j : range1(N))
+    {
+        O[j] = op(sites, "Id", j);
+    }
 
     // Position we will place our operator
-    int Npos = N/2;
+    int Npos = N / 2;
 
     //
     // TODO
@@ -79,17 +79,17 @@ int main()
     //
     // TODO
     //
-    // 2. Complete the following code 
+    // 2. Complete the following code
     //    to measure the magnetization.
     //    Print your results with PrintData(...)
     //
 
-    auto o = psidag(1)*O[1]*psi(1);
-    for(auto j : range1(2,N))
-      {
-      /* Your code here */
-      }
-    
+    auto o = psidag(1) * O[1] * psi(1);
+    for (auto j : range1(2, N))
+    {
+        /* Your code here */
+    }
+
     //
     // TODO
     //
@@ -100,4 +100,4 @@ int main()
     //
 
     return 0;
-    }
+}

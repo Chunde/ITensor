@@ -18,24 +18,21 @@
 
 #include "itensor/global.h"
 
-namespace itensor {
+namespace itensor
+{
 
-class Observer 
+    class Observer
     {
     public:
+        Observer() {}
 
-    Observer() { }
-    
-    void virtual
-    measure(Args const& args = Args::global()) { }
-    
-    bool virtual
-    checkDone(Args const& args = Args::global()) { return false; }
+        void virtual measure(Args const &args = Args::global()) {}
 
-    virtual ~Observer() { }
+        bool virtual checkDone(Args const &args = Args::global()) { return false; }
 
+        virtual ~Observer() {}
     };
 
-} //namespace itensor
+} // namespace itensor
 
-#endif 
+#endif

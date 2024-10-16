@@ -22,328 +22,322 @@
 #include "itensor/util/timers.h"
 #include "itensor/itdata/storage_types.h"
 
-namespace itensor {
+namespace itensor
+{
 
-struct ITData;
+    struct ITData;
 
-using PData = std::shared_ptr<ITData>;
+    using PData = std::shared_ptr<ITData>;
 
-struct CPData  //logically const ITData smart pointer
+    struct CPData // logically const ITData smart pointer
     {
-    PData& p;
+        PData &p;
 
-    CPData(PData& p_) : p(p_) { }
+        CPData(PData &p_) : p(p_) {}
 
-    explicit operator bool() const { return static_cast<bool>(p); }
+        explicit operator bool() const { return static_cast<bool>(p); }
 
-    ITData&
-    operator*();
+        ITData &
+        operator*();
 
-    const ITData&
-    operator*() const;
+        const ITData &
+        operator*() const;
 
-    ITData*
-    operator->();
+        ITData *
+        operator->();
 
-    const ITData*
-    operator->() const;
+        const ITData *
+        operator->() const;
     };
 
-template<typename TList>
-struct FuncBaseT : FuncBaseT<popFront<TList>>
+    template <typename TList>
+    struct FuncBaseT : FuncBaseT<popFront<TList>>
     {
-    using T = frontType<TList>;
-    using FuncBaseT<popFront<TList>>::applyTo;
+        using T = frontType<TList>;
+        using FuncBaseT<popFront<TList>>::applyTo;
 
-    void virtual
-    applyTo(const T& t) = 0;
+        void virtual applyTo(const T &t) = 0;
 
-    void virtual
-    applyTo(T& t) = 0;
+        void virtual applyTo(T &t) = 0;
     };
-template<>
-struct FuncBaseT<TypeList<>>
+    template <>
+    struct FuncBaseT<TypeList<>>
     {
-    void
-    applyTo() { }
+        void
+        applyTo() {}
     };
 
-using FuncBase = FuncBaseT<StorageTypes>;
+    using FuncBase = FuncBaseT<StorageTypes>;
 
-
-struct ITData
+    struct ITData
     {
-    ITData() { }
-    virtual ~ITData() { }
+        ITData() {}
+        virtual ~ITData() {}
 
-    PData virtual
-    clone() const = 0;
+        PData virtual clone() const = 0;
 
-    void virtual
-    plugInto(FuncBase& f) const = 0;
+        void virtual plugInto(FuncBase &f) const = 0;
 
-    void virtual
-    plugInto(FuncBase& f) = 0;
+        void virtual plugInto(FuncBase &f) = 0;
     };
 
-template<typename T>
-class ITWrap : public ITData
+    template <typename T>
+    class ITWrap : public ITData
     {
-    static_assert(containsType<StorageTypes,stdx::decay_t<T>>{},"Data type not in list of registered storage types");
+        static_assert(containsType<StorageTypes, stdx::decay_t<T>>{}, "Data type not in list of registered storage types");
+
     public:
+        T d;
 
-    T d;
-
-    template<typename... VArgs>
-    ITWrap(VArgs&&... vargs) : d(std::forward<VArgs>(vargs)...) 
-        { 
+        template <typename... VArgs>
+        ITWrap(VArgs &&...vargs) : d(std::forward<VArgs>(vargs)...)
+        {
         }
 
-    virtual ~ITWrap() { }
+        virtual ~ITWrap() {}
 
     private:
-    
-    PData
-    clone() const final 
-        { 
-        return std::make_shared<ITWrap<T>>(d);
+        PData
+        clone() const final
+        {
+            return std::make_shared<ITWrap<T>>(d);
         }
 
-    void
-    plugInto(FuncBase& f) const final
+        void
+        plugInto(FuncBase &f) const final
         {
-        f.applyTo(d);
+            f.applyTo(d);
         }
-        
-    void
-    plugInto(FuncBase& f) final
+
+        void
+        plugInto(FuncBase &f) final
         {
-        f.applyTo(d);
+            f.applyTo(d);
         }
     };
 
-
-class ManageStore
+    class ManageStore
     {
-    enum Action
+        enum Action
         {
-        None,
-        AssignNewData,
-        AssignPointerRtoL
+            None,
+            AssignNewData,
+            AssignPointerRtoL
         };
 
-    PData *pparg1_ = nullptr;
-    PData *pparg2_ = nullptr;
-    Action action_ = None;
-    PData nd_;
+        PData *pparg1_ = nullptr;
+        PData *pparg2_ = nullptr;
+        Action action_ = None;
+        PData nd_;
 
-    class UniqueRef;
+        class UniqueRef;
 
     public:
+        ManageStore() {}
 
-    ManageStore() { }
-
-    ManageStore(PData *pparg1)
-      : pparg1_(pparg1)
-        { }
-
-    ManageStore(PData *pparg1, PData *pparg2)
-      : pparg1_(pparg1), pparg2_(pparg2)
-        { }
-
-    ManageStore(ManageStore&& o)
-      : pparg1_(o.pparg1_),
-        pparg2_(o.pparg2_),
-        action_(o.action_),
-        nd_(std::move(o.nd_))
-        { 
-        o.pparg1_ = nullptr;
-        o.pparg2_ = nullptr;
-        o.action_ = None;
-        }
-
-    ~ManageStore()
+        ManageStore(PData *pparg1)
+            : pparg1_(pparg1)
         {
-        updateArg1();
         }
 
-    ManageStore(const ManageStore&) = delete;
-
-    ManageStore&
-    operator=(const ManageStore&) = delete;
-
-    bool
-    hasPArg1() const { return bool(pparg1_); }
-
-    bool
-    hasPArg2() const { return bool(pparg2_); }
-
-    void
-    setparg1(PData *pparg1)
+        ManageStore(PData *pparg1, PData *pparg2)
+            : pparg1_(pparg1), pparg2_(pparg2)
         {
-        pparg1_ = pparg1;
         }
 
-    void
-    setparg2(PData *pparg2)
+        ManageStore(ManageStore &&o)
+            : pparg1_(o.pparg1_),
+              pparg2_(o.pparg2_),
+              action_(o.action_),
+              nd_(std::move(o.nd_))
         {
-        pparg2_ = pparg2;
+            o.pparg1_ = nullptr;
+            o.pparg2_ = nullptr;
+            o.action_ = None;
         }
 
-    PData&
-    parg1() 
-        { 
+        ~ManageStore()
+        {
+            updateArg1();
+        }
+
+        ManageStore(const ManageStore &) = delete;
+
+        ManageStore &
+        operator=(const ManageStore &) = delete;
+
+        bool
+        hasPArg1() const { return bool(pparg1_); }
+
+        bool
+        hasPArg2() const { return bool(pparg2_); }
+
+        void
+        setparg1(PData *pparg1)
+        {
+            pparg1_ = pparg1;
+        }
+
+        void
+        setparg2(PData *pparg2)
+        {
+            pparg2_ = pparg2;
+        }
+
+        PData &
+        parg1()
+        {
 #ifdef DEBUG
-        if(!pparg1_) Error("Attempt to dereference nullptr");
+            if (!pparg1_)
+                Error("Attempt to dereference nullptr");
 #endif
-        return *pparg1_; 
+            return *pparg1_;
         }
 
-    PData&
-    parg2() 
-        { 
+        PData &
+        parg2()
+        {
 #ifdef DEBUG
-        if(!pparg2_) Error("Attempt to dereference nullptr");
+            if (!pparg2_)
+                Error("Attempt to dereference nullptr");
 #endif
-        return *pparg2_; 
+            return *pparg2_;
         }
 
-    //Can be used as StorageType& sref = mp.modifyData();
-    //The RefHelper return type will deduce StorageType
-    //and convert to a StorageType&
-    UniqueRef
-    modifyData();
+        // Can be used as StorageType& sref = mp.modifyData();
+        // The RefHelper return type will deduce StorageType
+        // and convert to a StorageType&
+        UniqueRef
+        modifyData();
 
-    //This returns a pointer because if it returned a reference
-    //it is too easy to copy the data type by writing
-    //auto nd = modifyData(...);
-    template<typename T>
-    T*
-    modifyData(const T& d);
+        // This returns a pointer because if it returned a reference
+        // it is too easy to copy the data type by writing
+        // auto nd = modifyData(...);
+        template <typename T>
+        T *
+        modifyData(const T &d);
 
-    //This returns a pointer because if it returned a reference
-    //it is too easy to copy the data type by writing
-    //auto nd = makeNewData(...);
-    template <typename StorageT, typename... Args>
-    StorageT*
-    makeNewData(Args&&... args);
+        // This returns a pointer because if it returned a reference
+        // it is too easy to copy the data type by writing
+        // auto nd = makeNewData(...);
+        template <typename StorageT, typename... Args>
+        StorageT *
+        makeNewData(Args &&...args);
 
-    PData&
-    newData() { return nd_; }
+        PData &
+        newData() { return nd_; }
 
-    void
-    assignPointerRtoL();
+        void
+        assignPointerRtoL();
 
-    void
-    pointTo(const PData& p);
+        void
+        pointTo(const PData &p);
 
     private:
+        void
+        updateArg1();
 
-    void
-    updateArg1();
-
-    class UniqueRef
+        class UniqueRef
         {
-        PData* pdata_ = nullptr;
+            PData *pdata_ = nullptr;
+
         public:
+            UniqueRef(PData *pdata) : pdata_(pdata) {}
 
-        UniqueRef(PData* pdata) : pdata_(pdata) { }
-
-        template<typename T>
-        operator T&()
+            template <typename T>
+            operator T &()
             {
-            if(!(pdata_->unique())) 
+                if (!(pdata_->unique()))
                 {
-                auto* olda1 = static_cast<T*>(pdata_->get());
-                *pdata_ = std::make_shared<ITWrap<T>>(*olda1);
+                    auto *olda1 = static_cast<T *>(pdata_->get());
+                    *pdata_ = std::make_shared<ITWrap<T>>(*olda1);
                 }
-            return *(static_cast<T*>(pdata_->get()));
+                return *(static_cast<T *>(pdata_->get()));
             }
         };
     };
 
-template <typename StorageT, typename... VArgs>
-StorageT* ManageStore::
-makeNewData(VArgs&&... vargs)
+    template <typename StorageT, typename... VArgs>
+    StorageT *ManageStore::
+        makeNewData(VArgs &&...vargs)
     {
-    //if(!pparg1_) Error("Can't call makeNewData with const-only access to first arg");
-    action_ = AssignNewData;
-    auto newdat = std::make_shared<ITWrap<StorageT>>(std::forward<VArgs>(vargs)...);
-    auto* ret = newdat.get();
-    nd_ = std::move(newdat);
-    return &(ret->d);
+        // if(!pparg1_) Error("Can't call makeNewData with const-only access to first arg");
+        action_ = AssignNewData;
+        auto newdat = std::make_shared<ITWrap<StorageT>>(std::forward<VArgs>(vargs)...);
+        auto *ret = newdat.get();
+        nd_ = std::move(newdat);
+        return &(ret->d);
     }
 
-void inline ManageStore::
-assignPointerRtoL() 
-    { 
-    //if(!pparg2_) Error("No second pointer provided for action AssignPointerRtoL");
-    action_ = AssignPointerRtoL; 
-    }
-
-void inline ManageStore::
-pointTo(const PData& p) 
-    { 
-    action_ = AssignNewData; 
-    nd_ = p;
-    }
-
-void inline ManageStore::
-updateArg1()
+    void inline ManageStore::
+        assignPointerRtoL()
     {
-    if(!pparg1_) return;
-    //println("In updateArg1, arg1_ points to ",arg1_->get());
-    if(action_ == AssignNewData)
+        // if(!pparg2_) Error("No second pointer provided for action AssignPointerRtoL");
+        action_ = AssignPointerRtoL;
+    }
+
+    void inline ManageStore::
+        pointTo(const PData &p)
+    {
+        action_ = AssignNewData;
+        nd_ = p;
+    }
+
+    void inline ManageStore::
+        updateArg1()
+    {
+        if (!pparg1_)
+            return;
+        // println("In updateArg1, arg1_ points to ",arg1_->get());
+        if (action_ == AssignNewData)
         {
-        //println("Doing AssignNewData");
-        *pparg1_ = std::move(nd_);
+            // println("Doing AssignNewData");
+            *pparg1_ = std::move(nd_);
         }
-    else if(action_ == AssignPointerRtoL)
+        else if (action_ == AssignPointerRtoL)
         {
-        //println("Doing AssignPointerRtoL");
-        //*pparg1_ = std::const_pointer_cast<ITData,const ITData>(*pparg2_);
-        *pparg1_ = *pparg2_;
+            // println("Doing AssignPointerRtoL");
+            //*pparg1_ = std::const_pointer_cast<ITData,const ITData>(*pparg2_);
+            *pparg1_ = *pparg2_;
         }
     }
 
-ManageStore::UniqueRef inline ManageStore::
-modifyData()
+    ManageStore::UniqueRef inline ManageStore::
+        modifyData()
     {
-    //if(!pparg1_) Error("Can't modify const data");
-    return UniqueRef(pparg1_);
+        // if(!pparg1_) Error("Can't modify const data");
+        return UniqueRef(pparg1_);
     }
 
-template<typename T>
-T* ManageStore::
-modifyData(const T& d)
+    template <typename T>
+    T *ManageStore::
+        modifyData(const T &d)
     {
-    //if(!pparg1_) Error("Can't modify const data");
-    if(!(pparg1_->unique())) 
+        // if(!pparg1_) Error("Can't modify const data");
+        if (!(pparg1_->unique()))
         {
-        auto* olda1 = static_cast<ITWrap<T>*>(pparg1_->get());
-        *pparg1_ = std::make_shared<ITWrap<T>>(olda1->d);
+            auto *olda1 = static_cast<ITWrap<T> *>(pparg1_->get());
+            *pparg1_ = std::make_shared<ITWrap<T>>(olda1->d);
         }
-    auto* a1 = static_cast<ITWrap<T>*>(pparg1_->get());
-    return &(a1->d);
+        auto *a1 = static_cast<ITWrap<T> *>(pparg1_->get());
+        return &(a1->d);
     }
 
+    inline ITData &CPData::
+    operator*() { return *p; }
 
-inline ITData& CPData::
-operator*() { return *p; }
+    inline const ITData &CPData::
+    operator*() const { return *p; }
 
-inline const ITData& CPData::
-operator*() const { return *p; }
+    inline ITData *CPData::
+    operator->() { return p.get(); }
 
-inline ITData* CPData::
-operator->() { return p.get(); }
+    inline const ITData *CPData::
+    operator->() const { return p.get(); }
 
-inline const ITData* CPData::
-operator->() const { return p.get(); }
-
-template<typename T>
-const char*
-typeNameOf(T const& t) { return "[unknown]"; }
-
+    template <typename T>
+    const char *
+    typeNameOf(T const &t) { return "[unknown]"; }
 
 } // namespace itensor
 

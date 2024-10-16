@@ -17,195 +17,201 @@
 #define __ITENSOR_LOCALMPOSET
 #include "itensor/mps/localmpo.h"
 
-namespace itensor {
+namespace itensor
+{
 
-class LocalMPOSet
+    class LocalMPOSet
     {
-    std::vector<MPO> const* Op_ = nullptr;
-    std::vector<LocalMPO> lmpo_;
+        std::vector<MPO> const *Op_ = nullptr;
+        std::vector<LocalMPO> lmpo_;
+
     public:
+        LocalMPOSet(Args const &args = Args::global()) {}
 
-    LocalMPOSet(Args const& args = Args::global()) { }
+        LocalMPOSet(std::vector<MPO> const &Op,
+                    Args const &args = Args::global());
 
-    LocalMPOSet(std::vector<MPO> const& Op,
-                Args const& args = Args::global());
+        LocalMPOSet(std::vector<MPO> const &H,
+                    std::vector<ITensor> const &LH,
+                    int LHlim,
+                    std::vector<ITensor> const &RH,
+                    int RHlim,
+                    Args const &args = Args::global());
 
-    LocalMPOSet(std::vector<MPO> const& H, 
-                std::vector<ITensor> const& LH, 
-                int LHlim,
-                std::vector<ITensor> const& RH,
-                int RHlim,
-                Args const& args = Args::global());
+        void
+        product(ITensor const &phi,
+                ITensor &phip) const;
 
-    void
-    product(ITensor const& phi, 
-            ITensor & phip) const;
+        Real
+        expect(ITensor const &phi) const;
 
-    Real
-    expect(ITensor const& phi) const;
+        ITensor
+        deltaRho(ITensor const &AA,
+                 ITensor const &comb,
+                 Direction dir) const;
 
-    ITensor
-    deltaRho(ITensor const& AA, 
-             ITensor const& comb, 
-             Direction dir) const;
+        ITensor
+        diag() const;
 
-    ITensor
-    diag() const;
+        void
+        position(int b,
+                 MPS const &psi);
 
-    void
-    position(int b, 
-             MPS const& psi);
-
-    std::vector<ITensor>
-    L() const 
-        { 
-        auto L = std::vector<ITensor>(lmpo_.size());
-        for(auto n : range(lmpo_)) L.at(n) = lmpo_.at(n).L();
-        return L;
-        }
-    std::vector<ITensor>
-    R() const 
-        { 
-        auto R = std::vector<ITensor>(lmpo_.size());
-        for(auto n : range(lmpo_)) R.at(n) = lmpo_.at(n).R();
-        return R;
-        }
-
-    void
-    L(std::vector<ITensor> const& nL)
-        { 
-        for(auto n : range(lmpo_)) lmpo_.at(n).L(nL.at(n));
-        }
-    void
-    R(std::vector<ITensor> const& nR)
-        { 
-        for(auto n : range(lmpo_)) lmpo_.at(n).R(nR.at(n));
-        }
-
-    void
-    shift(int j, Direction dir, ITensor const& A)
+        std::vector<ITensor>
+        L() const
         {
-        for(auto n : range(lmpo_)) lmpo_[n].shift(j,dir,A);
+            auto L = std::vector<ITensor>(lmpo_.size());
+            for (auto n : range(lmpo_))
+                L.at(n) = lmpo_.at(n).L();
+            return L;
+        }
+        std::vector<ITensor>
+        R() const
+        {
+            auto R = std::vector<ITensor>(lmpo_.size());
+            for (auto n : range(lmpo_))
+                R.at(n) = lmpo_.at(n).R();
+            return R;
         }
 
-    int
-    numCenter() const { return lmpo_.front().numCenter(); }
-    void
-    numCenter(int val);
-
-    size_t
-    size() const { return lmpo_.front().size(); }
-
-    explicit
-    operator bool() const { return bool(Op_); }
-
-    bool
-    doWrite() const { return lmpo_.front().doWrite(); }
-    void
-    doWrite(bool val, Args const& args = Args::global()) 
-        { 
-        for(auto& lm : lmpo_) lm.doWrite(val,args);
+        void
+        L(std::vector<ITensor> const &nL)
+        {
+            for (auto n : range(lmpo_))
+                lmpo_.at(n).L(nL.at(n));
+        }
+        void
+        R(std::vector<ITensor> const &nR)
+        {
+            for (auto n : range(lmpo_))
+                lmpo_.at(n).R(nR.at(n));
         }
 
+        void
+        shift(int j, Direction dir, ITensor const &A)
+        {
+            for (auto n : range(lmpo_))
+                lmpo_[n].shift(j, dir, A);
+        }
+
+        int
+        numCenter() const { return lmpo_.front().numCenter(); }
+        void
+        numCenter(int val);
+
+        size_t
+        size() const { return lmpo_.front().size(); }
+
+        explicit
+        operator bool() const { return bool(Op_); }
+
+        bool
+        doWrite() const { return lmpo_.front().doWrite(); }
+        void
+        doWrite(bool val, Args const &args = Args::global())
+        {
+            for (auto &lm : lmpo_)
+                lm.doWrite(val, args);
+        }
     };
 
-inline LocalMPOSet::
-LocalMPOSet(std::vector<MPO> const& Op,
-            Args const& args)
-  : Op_(&Op),
-    lmpo_(Op.size())
-    { 
-    for(auto n : range(lmpo_.size()))
-        {
-        lmpo_[n] = LocalMPO(Op.at(n),args);
-        }
-    }
-
-inline LocalMPOSet::
-LocalMPOSet(std::vector<MPO> const& H, 
-            std::vector<ITensor> const& LH, 
-            int LHlim,
-            std::vector<ITensor> const& RH,
-            int RHlim,
-            Args const& args)
-  : Op_(&H),
-    lmpo_(H.size())
-    { 
-    for(auto n : range(lmpo_.size()))
-        {
-        lmpo_[n] = LocalMPO(H.at(n),LH.at(n),LHlim,RH.at(n),RHlim,args);
-        }
-    }
-
-void inline LocalMPOSet::
-product(ITensor const& phi, 
-        ITensor & phip) const
+    inline LocalMPOSet::
+        LocalMPOSet(std::vector<MPO> const &Op,
+                    Args const &args)
+        : Op_(&Op),
+          lmpo_(Op.size())
     {
-    lmpo_.front().product(phi,phip);
-
-    ITensor phi_n;
-    for(auto n : range(1,lmpo_.size()))
+        for (auto n : range(lmpo_.size()))
         {
-        lmpo_[n].product(phi,phi_n);
-        phip += phi_n;
+            lmpo_[n] = LocalMPO(Op.at(n), args);
         }
     }
 
-Real inline LocalMPOSet::
-expect(ITensor const& phi) const
+    inline LocalMPOSet::
+        LocalMPOSet(std::vector<MPO> const &H,
+                    std::vector<ITensor> const &LH,
+                    int LHlim,
+                    std::vector<ITensor> const &RH,
+                    int RHlim,
+                    Args const &args)
+        : Op_(&H),
+          lmpo_(H.size())
     {
-    Real ex_ = 0;
-    for(size_t n = 0; n < lmpo_.size(); ++n)
-    for(auto n : range(lmpo_.size()))
+        for (auto n : range(lmpo_.size()))
         {
-        ex_ += lmpo_[n].expect(phi);
+            lmpo_[n] = LocalMPO(H.at(n), LH.at(n), LHlim, RH.at(n), RHlim, args);
         }
-    return ex_;
     }
 
-ITensor inline LocalMPOSet::
-deltaRho(ITensor const& AA,
-         ITensor const& comb, 
-         Direction dir) const
+    void inline LocalMPOSet::
+        product(ITensor const &phi,
+                ITensor &phip) const
     {
-    ITensor delta = lmpo_.front().deltaRho(AA,comb,dir);
-    for(auto n : range(1,lmpo_.size()))
+        lmpo_.front().product(phi, phip);
+
+        ITensor phi_n;
+        for (auto n : range(1, lmpo_.size()))
         {
-        delta += lmpo_[n].deltaRho(AA,comb,dir);
+            lmpo_[n].product(phi, phi_n);
+            phip += phi_n;
         }
-    return delta;
     }
 
-ITensor inline LocalMPOSet::
-diag() const
+    Real inline LocalMPOSet::
+        expect(ITensor const &phi) const
     {
-    ITensor D = lmpo_.front().diag();
-    for(auto n : range(1,lmpo_.size()))
-        {
-        D += lmpo_[n].diag();
-        }
-    return D;
+        Real ex_ = 0;
+        for (size_t n = 0; n < lmpo_.size(); ++n)
+            for (auto n : range(lmpo_.size()))
+            {
+                ex_ += lmpo_[n].expect(phi);
+            }
+        return ex_;
     }
 
-void inline LocalMPOSet::
-position(int b, 
-         MPS const& psi)
+    ITensor inline LocalMPOSet::
+        deltaRho(ITensor const &AA,
+                 ITensor const &comb,
+                 Direction dir) const
     {
-    for(auto n : range(lmpo_.size()))
+        ITensor delta = lmpo_.front().deltaRho(AA, comb, dir);
+        for (auto n : range(1, lmpo_.size()))
         {
-        lmpo_[n].position(b,psi);
+            delta += lmpo_[n].deltaRho(AA, comb, dir);
         }
+        return delta;
     }
 
-void inline LocalMPOSet::
-numCenter(int val)
+    ITensor inline LocalMPOSet::
+        diag() const
     {
-    for(auto n : range(lmpo_.size()))
+        ITensor D = lmpo_.front().diag();
+        for (auto n : range(1, lmpo_.size()))
         {
-        lmpo_[n].numCenter(val);
+            D += lmpo_[n].diag();
+        }
+        return D;
+    }
+
+    void inline LocalMPOSet::
+        position(int b,
+                 MPS const &psi)
+    {
+        for (auto n : range(lmpo_.size()))
+        {
+            lmpo_[n].position(b, psi);
         }
     }
 
-} //namespace itensor
+    void inline LocalMPOSet::
+        numCenter(int val)
+    {
+        for (auto n : range(lmpo_.size()))
+        {
+            lmpo_[n].numCenter(val);
+        }
+    }
+
+} // namespace itensor
 
 #endif

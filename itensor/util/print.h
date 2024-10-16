@@ -19,157 +19,157 @@
 #include "itensor/util/tinyformat.h"
 #include "itensor/util/stdx.h"
 
-namespace itensor {
+namespace itensor
+{
 
-template <typename... VArgs>
-void
-printf(const char* fmt_string, VArgs&&... vargs)
+    template <typename... VArgs>
+    void
+    printf(const char *fmt_string, VArgs &&...vargs)
     {
-    tinyformat::printf(fmt_string,std::forward<VArgs>(vargs)...);
-    std::cout.flush();
+        tinyformat::printf(fmt_string, std::forward<VArgs>(vargs)...);
+        std::cout.flush();
     }
 
-template <typename... VArgs>
-void
-printfln(const char* fmt_string, VArgs&&... vargs)
+    template <typename... VArgs>
+    void
+    printfln(const char *fmt_string, VArgs &&...vargs)
     {
-    tinyformat::printf(fmt_string,std::forward<VArgs>(vargs)...);
-    std::cout << std::endl;
+        tinyformat::printf(fmt_string, std::forward<VArgs>(vargs)...);
+        std::cout << std::endl;
     }
 
-void inline
-println()
+    void inline println()
     {
-    std::cout << std::endl;
+        std::cout << std::endl;
     }
 
-template <typename T,
-          class = stdx::require_not<std::is_convertible<T,std::ostream const&>>>
-void
-println(const T& arg)
+    template <typename T,
+              class = stdx::require_not<std::is_convertible<T, std::ostream const &>>>
+    void
+    println(const T &arg)
     {
-    std::cout << arg << std::endl;
+        std::cout << arg << std::endl;
     }
 
-template <typename T, typename... VArgs,
-          class = stdx::require_not<std::is_convertible<T,std::ostream const&>>>
-void
-println(const T& arg1, VArgs&&... vargs)
+    template <typename T, typename... VArgs,
+              class = stdx::require_not<std::is_convertible<T, std::ostream const &>>>
+    void
+    println(const T &arg1, VArgs &&...vargs)
     {
-    std::cout << arg1;
-    println(std::forward<VArgs>(vargs)...);
+        std::cout << arg1;
+        println(std::forward<VArgs>(vargs)...);
     }
 
-template <typename T,
-          class = stdx::require_not<std::is_convertible<T,std::ostream const&>>>
-void
-print(const T& arg)
+    template <typename T,
+              class = stdx::require_not<std::is_convertible<T, std::ostream const &>>>
+    void
+    print(const T &arg)
     {
-    std::cout << arg;
-    std::cout.flush();
+        std::cout << arg;
+        std::cout.flush();
     }
 
-template <typename T, typename... VArgs,
-          class = stdx::require_not<std::is_convertible<T,std::ostream const&>>>
-void
-print(const T& arg1, VArgs&&... vargs)
+    template <typename T, typename... VArgs,
+              class = stdx::require_not<std::is_convertible<T, std::ostream const &>>>
+    void
+    print(const T &arg1, VArgs &&...vargs)
     {
-    std::cout << arg1;
-    print(std::forward<VArgs>(vargs)...);
+        std::cout << arg1;
+        print(std::forward<VArgs>(vargs)...);
     }
 
+    ////////////////////////////////
+    ////////////////////////////////
+    ////////////////////////////////
 
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
-
-template <typename... VArgs>
-void
-printf(std::ostream & os, const char* fmt_string, VArgs&&... vargs)
+    template <typename... VArgs>
+    void
+    printf(std::ostream &os, const char *fmt_string, VArgs &&...vargs)
     {
-    tinyformat::format(os,fmt_string,std::forward<VArgs>(vargs)...);
-    std::cout.flush();
+        tinyformat::format(os, fmt_string, std::forward<VArgs>(vargs)...);
+        std::cout.flush();
     }
 
-template <typename... VArgs>
-void
-printfln(std::ostream & os, const char* fmt_string, VArgs&&... vargs)
+    template <typename... VArgs>
+    void
+    printfln(std::ostream &os, const char *fmt_string, VArgs &&...vargs)
     {
-    tinyformat::format(os,fmt_string,std::forward<VArgs>(vargs)...);
-    os << std::endl;
+        tinyformat::format(os, fmt_string, std::forward<VArgs>(vargs)...);
+        os << std::endl;
     }
 
-void inline
-println(std::ostream & os)
+    void inline println(std::ostream &os)
     {
-    os << std::endl;
+        os << std::endl;
     }
 
-template <typename T>
-void
-println(std::ostream & os, const T& arg)
+    template <typename T>
+    void
+    println(std::ostream &os, const T &arg)
     {
-    os << arg << std::endl;
+        os << arg << std::endl;
     }
 
-template <typename T, typename... VArgs>
-void
-println(std::ostream & os, const T& arg1, VArgs&&... vargs)
+    template <typename T, typename... VArgs>
+    void
+    println(std::ostream &os, const T &arg1, VArgs &&...vargs)
     {
-    os << arg1;
-    println(os,std::forward<VArgs>(vargs)...);
+        os << arg1;
+        println(os, std::forward<VArgs>(vargs)...);
     }
 
-template <typename T>
-void
-print(std::ostream & os, const T& arg)
+    template <typename T>
+    void
+    print(std::ostream &os, const T &arg)
     {
-    os << arg;
-    os.flush();
+        os << arg;
+        os.flush();
     }
 
-template <typename T, typename... VArgs>
-void
-print(std::ostream & os, const T& arg1, VArgs&&... vargs)
+    template <typename T, typename... VArgs>
+    void
+    print(std::ostream &os, const T &arg1, VArgs &&...vargs)
     {
-    os << arg1;
-    print(os,std::forward<VArgs>(vargs)...);
+        os << arg1;
+        print(os, std::forward<VArgs>(vargs)...);
     }
 
-////////////////////////////////
-////////////////////////////////
-////////////////////////////////
+    ////////////////////////////////
+    ////////////////////////////////
+    ////////////////////////////////
 
-template<typename T>
-void
-PrintNice(const char* tok,
-          T const& X)
+    template <typename T>
+    void
+    PrintNice(const char *tok,
+              T const &X)
     {
-    auto pre = tinyformat::format("%s = ",tok);
-    auto str = tinyformat::format("%s",X);
+        auto pre = tinyformat::format("%s = ", tok);
+        auto str = tinyformat::format("%s", X);
 
-    //Put a newline after '=' if
-    //output is large or output contains
-    //newline character
-    bool put_newline = false;
-    if(pre.size() + str.size() > 60)
+        // Put a newline after '=' if
+        // output is large or output contains
+        // newline character
+        bool put_newline = false;
+        if (pre.size() + str.size() > 60)
         {
-        put_newline = true;
+            put_newline = true;
         }
-    else
+        else
         {
-        for(auto c : str)
-            if(c == '\n')
+            for (auto c : str)
+                if (c == '\n')
                 {
-                put_newline = true;
-                break;
+                    put_newline = true;
+                    break;
                 }
         }
-    if(put_newline) println(pre);
-    else            print(pre);
-    println(str);
+        if (put_newline)
+            println(pre);
+        else
+            print(pre);
+        println(str);
     }
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

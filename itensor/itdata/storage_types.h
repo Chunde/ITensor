@@ -16,62 +16,59 @@
 #include "itensor/types.h"
 #include "itensor/util/typelist.h"
 
-namespace itensor 
+namespace itensor
 {
 
-//
-// To register a new storage type:
-//
-// (1) Forward declare the storage type
-//
-// (2) Add a line to the definition of StorageTypes
-//     below, following the same format
-//
-// (3) Include the header file defining
-//     the new type
-//
+    //
+    // To register a new storage type:
+    //
+    // (1) Forward declare the storage type
+    //
+    // (2) Add a line to the definition of StorageTypes
+    //     below, following the same format
+    //
+    // (3) Include the header file defining
+    //     the new type
+    //
 
-//(1) Forward declare storage types
+    //(1) Forward declare storage types
 
-template<typename T>
-class Dense;
+    template <typename T>
+    class Dense;
 
-template<typename T>
-class Diag;
+    template <typename T>
+    class Diag;
 
-class Combiner;
+    class Combiner;
 
-template<typename T>
-class QDense;
+    template <typename T>
+    class QDense;
 
-class QCombiner;
+    class QCombiner;
 
-template<typename T>
-class QDiag;
+    template <typename T>
+    class QDiag;
 
-template<typename T>
-class Scalar;
+    template <typename T>
+    class Scalar;
 
-
-
-using 
-StorageTypes = TypeList< 
-//-----------
-//(2) Register storage type names
-Dense<Real>,
-Dense<Cplx>,
-Combiner,
-Diag<Real>,
-Diag<Cplx>,
-QDense<Real>,
-QDense<Cplx>,
-QCombiner,
-QDiag<Real>,
-QDiag<Cplx>,
-Scalar<Real>,
-Scalar<Cplx>
-//-----------
->;
+    using StorageTypes = TypeList<
+        //-----------
+        //(2) Register storage type names
+        Dense<Real>,
+        Dense<Cplx>,
+        Combiner,
+        Diag<Real>,
+        Diag<Cplx>,
+        QDense<Real>,
+        QDense<Cplx>,
+        QCombiner,
+        QDiag<Real>,
+        QDiag<Cplx>,
+        Scalar<Real>,
+        Scalar<Cplx>
+        //-----------
+        >;
 
 }
 

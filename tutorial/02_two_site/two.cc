@@ -8,40 +8,39 @@
 using namespace itensor;
 
 ITensor
-makeSp(Index const& s)
-    {
-    auto Sp = ITensor(s,prime(s));
-    Sp.set(s=2,prime(s)=1, 1);
+makeSp(Index const &s)
+{
+    auto Sp = ITensor(s, prime(s));
+    Sp.set(s = 2, prime(s) = 1, 1);
     return Sp;
-    }
+}
 
 ITensor
-makeSm(Index const& s)
-    {
-    auto Sm = ITensor(s,prime(s));
-    Sm.set(s=1,prime(s)=2,1);
+makeSm(Index const &s)
+{
+    auto Sm = ITensor(s, prime(s));
+    Sm.set(s = 1, prime(s) = 2, 1);
     return Sm;
-    }
+}
 
 ITensor
-makeSz(Index const& s)
-    {
-    auto Sz = ITensor(s,prime(s));
-    Sz.set(s=1,prime(s)=1,+0.5);
-    Sz.set(s=2,prime(s)=2,-0.5);
+makeSz(Index const &s)
+{
+    auto Sz = ITensor(s, prime(s));
+    Sz.set(s = 1, prime(s) = 1, +0.5);
+    Sz.set(s = 2, prime(s) = 2, -0.5);
     return Sz;
-    }
-
+}
 
 int main()
-    {
+{
     //
     // Initial product state
     //
-    auto s1 = Index(2,"s1");
-    auto s2 = Index(2,"s2");
-    auto psi = ITensor(s1,s2);
-    psi.set(s1=1,s2=2,1.0);
+    auto s1 = Index(2, "s1");
+    auto s2 = Index(2, "s2");
+    auto psi = ITensor(s1, s2);
+    psi.set(s1 = 1, s2 = 2, 1.0);
 
     PrintData(psi);
 
@@ -58,12 +57,11 @@ int main()
     //
     // Two-site Heisenberg Hamiltonian
     //
-    auto H = Sz1*Sz2 + 0.5*Sp1*Sm2 + 0.5*Sm1*Sp2;
+    auto H = Sz1 * Sz2 + 0.5 * Sp1 * Sm2 + 0.5 * Sm1 * Sp2;
 
     // Initial energy expectation value
     auto initEn = elt(dag(prime(psi)) * H * psi);
-    printfln("\nInitial energy = %.10f",initEn);
-
+    printfln("\nInitial energy = %.10f", initEn);
 
     //
     // Make exp(-beta*H)
@@ -73,18 +71,18 @@ int main()
     // 3. Adjust beta to get the ground state
     //
     Real beta = 0.;
-    auto expH = expHermitian(H,-beta);
+    auto expH = expHermitian(H, -beta);
 
     // Here we apply exp(-beta*H), normalize
     // and unprime
-    auto psibeta = expH*psi;
+    auto psibeta = expH * psi;
     psibeta.noPrime();
     psibeta /= norm(psibeta);
 
     PrintData(psibeta);
 
     auto En = elt(dag(prime(psibeta)) * H * psibeta);
-    printfln("At beta=%.1f, energy = %.10f",beta,En);
+    printfln("At beta=%.1f, energy = %.10f", beta, En);
 
     //
     // TODO
@@ -95,7 +93,7 @@ int main()
     //    system, e.g. {"MaxDim=",...}
     //
 
-    auto [U,D,V] = svd(psibeta,{s1} /* Your code here */ );
+    auto [U, D, V] = svd(psibeta, {s1} /* Your code here */);
 
     PrintData(D);
 
@@ -107,7 +105,7 @@ int main()
     //    Print your results with PrintData(...).
     //    HINT: use U*D*V to calculate the new,
     //    truncated wavefunction
-    //    
+    //
 
     /* Your code here */
 
@@ -115,9 +113,9 @@ int main()
     // TODO
     //
     // 3. Increase beta (defined above) to get the
-    //    ground state. How does the overlap 
+    //    ground state. How does the overlap
     //    change?
-    //    
+    //
 
     return 0;
-    }
+}

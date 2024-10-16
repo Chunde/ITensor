@@ -18,37 +18,42 @@
 
 #include <iostream>
 
-namespace itensor {
+namespace itensor
+{
 
-double cpu_mytime();
-double cpu_mywall();
+    double cpu_mytime();
+    double cpu_mywall();
 
-struct cpu_time
+    struct cpu_time
     {
-    double time = 0; // in seconds
-    double wall = 0;
+        double time = 0; // in seconds
+        double wall = 0;
 
-    cpu_time() { mark(); }
+        cpu_time() { mark(); }
 
-    void 
-    mark() { time = cpu_mytime(); wall = cpu_mywall(); }
+        void
+        mark()
+        {
+            time = cpu_mytime();
+            wall = cpu_mywall();
+        }
 
-    cpu_time 
-    sincemark() const;
+        cpu_time
+        sincemark() const;
     };
 
-std::ostream& 
-operator<<(std::ostream & s, const cpu_time& t);
+    std::ostream &
+    operator<<(std::ostream &s, const cpu_time &t);
 
-const double&
-firstwall();
+    const double &
+    firstwall();
 
-std::string 
-showtime(double time);
+    std::string
+    showtime(double time);
 
-std::ostream& 
-operator<<(std::ostream & s, const cpu_time& t);
+    std::ostream &
+    operator<<(std::ostream &s, const cpu_time &t);
 
-} //namespace itensor
+} // namespace itensor
 
 #endif

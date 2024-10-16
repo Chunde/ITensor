@@ -18,6 +18,6 @@
 
 #include "itensor/util/print.h"
 
-#define Print(X)  itensor::PrintNice(#X,X)
+#define Print(X) itensor::PrintNice(#X, X)
 
 #endif

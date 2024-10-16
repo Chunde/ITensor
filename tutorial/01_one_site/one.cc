@@ -8,33 +8,33 @@
 using namespace itensor;
 
 int main()
-    {
+{
     //
-    // Define our Index 
+    // Define our Index
     // (the space we are working with)
     //
 
-    auto s = Index(2,"s");
+    auto s = Index(2, "s");
 
     //
-    // Operators 
+    // Operators
     //
 
-    auto Sx = ITensor(s,prime(s));
+    auto Sx = ITensor(s, prime(s));
 
-    Sx.set(s=1,prime(s)=2,+0.5);
-    Sx.set(s=2,prime(s)=1,+0.5);
+    Sx.set(s = 1, prime(s) = 2, +0.5);
+    Sx.set(s = 2, prime(s) = 1, +0.5);
 
     PrintData(Sx);
 
     //
     // Single-site wavefunction
     //
-    
-    auto psi = ITensor(s); //initialized to zero
+
+    auto psi = ITensor(s); // initialized to zero
 
     //
-    // TODO 
+    // TODO
     //
     // 1. make the above wavefunction
     //    the (normalized) positive Sx eigenstate
@@ -44,7 +44,7 @@ int main()
     /* Your code here */
 
     PrintData(psi);
-    
+
     //
     // TODO
     //
@@ -70,4 +70,4 @@ int main()
     /* Your code here */
 
     return 0;
-    }
+}
